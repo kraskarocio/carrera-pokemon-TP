@@ -1,0 +1,4 @@
+Ivysaur,8,7,7
+Blastoise,8,8,9
+Wartortle,9,7,7
+Raichu,5,8,7
