@@ -17,22 +17,12 @@ enum TP_OBSTACULO {
 	OBSTACULO_INTELIGENCIA
 };
 
+typedef struct tp TP;
+
 struct pokemon_info {
 	char *nombre;
 	int fuerza, destreza, inteligencia;
 };
-struct jugador {
-	struct pokemon_info *pokemon;
-	lista_t *pista;
-};
-struct TP {
-	hash_t *hash_pokemones;
-	struct jugador *jugador1;
-	struct jugador *jugador2;
-};
-
-
-
 /**
  * Crea un nuevo TP a partir de un archivo de texto.
  * El archivo de texto tiene información de los pokemon con el siguiente formato:
@@ -42,27 +32,26 @@ struct TP {
  * ...
  * nombreN,fuerzaN,destrezaN,inteligenciaN
 */
-struct TP *tp_crear(const char *nombre_archivo);
+TP *tp_crear(const char *nombre_archivo);
 
 /**
  * Devuelve la cantidad de pokemon existentes.
 */
-int tp_cantidad_pokemon(struct TP *tp);
+int tp_cantidad_pokemon(TP *tp);
 
 /**
  * Busca un pokemon por nombre. Si no lo encuentra devuelve NULL.
  * El nombre del pokemon puede estar en mayúsculas o minúsculas y el resultado debería ser el mismo.
  * Por ejemplo "Pikachu" y "pikachu" deberían devolver el mismo resultado (si es que existe).
 */
-const struct pokemon_info *tp_buscar_pokemon(const struct TP *tp,
-					     const char *nombre);
+const struct pokemon_info *tp_buscar_pokemon(TP *tp, const char *nombre);
 
 /**
  * Devuelve un string con los nombres de los pokemon disponibles.
  * Los nombres deben ser devueltos en orden alfabético y separados por coma.
  * El string devuelto debe ser liberado con free por quien invoca esta función.
 */
-char *tp_nombres_disponibles(const struct TP *tp);
+char *tp_nombres_disponibles(TP *tp);
 
 /**
  * Selecciona un pokemon para un jugador.
@@ -70,14 +59,14 @@ char *tp_nombres_disponibles(const struct TP *tp);
  * Un jugador no puede seleccionar el mismo pokemon que el otro jugador.
  * Devuelve true si el pokemon fue seleccionado correctamente, false en caso contrario.
 */
-bool tp_seleccionar_pokemon(const struct TP *tp, enum TP_JUGADOR jugador,
+bool tp_seleccionar_pokemon(TP *tp, enum TP_JUGADOR jugador,
 			    const char *nombre);
 
 /**
  * Devuelve el pokemon seleccionado por un jugador.
  * Si el jugador no tiene un pokemon seleccionado, devuelve NULL.
 */
-const struct pokemon_info *tp_pokemon_seleccionado(const struct TP *tp,
+const struct pokemon_info *tp_pokemon_seleccionado(TP *tp,
 						   enum TP_JUGADOR jugador);
 
 /**
@@ -86,14 +75,14 @@ const struct pokemon_info *tp_pokemon_seleccionado(const struct TP *tp,
  * Si la posición es mayor a la longitud de la pista, el obstáculo se agrega al final.
  * Devuelve la cantidad total de obstáculos en la pista del jugador o 0 si no se pudo agregar el obstáculo.
 */
-unsigned tp_agregar_obstaculo(const struct TP *tp, enum TP_JUGADOR jugador,
+unsigned tp_agregar_obstaculo(TP *tp, enum TP_JUGADOR jugador,
 			      enum TP_OBSTACULO obstaculo, unsigned posicion);
 
 /**
  * Quita un obstáculo de la pista del jugador en la posición indicada.
  * Devuelve la cantidad total de obstáculos en la pista del jugador o 0 si no se pudo quitar el obstáculo.
 */
-unsigned tp_quitar_obstaculo(const struct TP *tp, enum TP_JUGADOR jugador,
+unsigned tp_quitar_obstaculo(TP *tp, enum TP_JUGADOR jugador,
 			     unsigned posicion);
 
 /**
@@ -102,30 +91,30 @@ unsigned tp_quitar_obstaculo(const struct TP *tp, enum TP_JUGADOR jugador,
  * El string devuelto debe ser liberado con free por quien invoca esta función.
  * Si el jugador no tiene obstáculos en la pista o en caso de error devuelve NULL.
 */
-char *tp_obstaculos_pista(const struct TP *tp, enum TP_JUGADOR jugador);
+char *tp_obstaculos_pista(TP *tp, enum TP_JUGADOR jugador);
 
 /**
  * Quita todos los obstáculos de la pista del jugador.
 */
-void tp_limpiar_pista(const struct TP *tp, enum TP_JUGADOR jugador);
+void tp_limpiar_pista(TP *tp, enum TP_JUGADOR jugador);
 
 /**
  * Devuelve las unidades de tiempo que tarda el pokemon del jugador en completar la pista de obstáculos
  * en función de sus habilidades y los obstáculos en la pista.
  * Si el jugador no tiene un pokemon seleccionado o no hay obstáculos en la pista, devuelve 0.
 */
-unsigned tp_calcular_tiempo_pista(const struct TP *tp, enum TP_JUGADOR jugador);
+unsigned tp_calcular_tiempo_pista(TP *tp, enum TP_JUGADOR jugador);
 
 /**
  * Devuelve un string csv con el tiempo que tarda el pokemon del jugador en completar cada obstáculo de la pista.
  * Si el jugador no tiene un pokemon seleccionado o no hay obstáculos en la pista, devuelve NULL.
  * El string devuelto debe ser liberado con free por quien invoca esta función.
 */
-char *tp_tiempo_por_obstaculo(const struct TP *tp, enum TP_JUGADOR jugador);
+char *tp_tiempo_por_obstaculo(TP *tp, enum TP_JUGADOR jugador);
 
 /**
  * Libera toda la memoria reservada por el TP.
 */
-void tp_destruir(struct TP *tp);
+void tp_destruir(TP *tp);
 
 #endif // __TP_H__

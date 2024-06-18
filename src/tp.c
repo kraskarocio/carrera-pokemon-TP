@@ -7,6 +7,17 @@
 #define BUFFER_SIZE 100
 #define BUFFER_SIZE_MINI 6
 
+
+struct jugador {
+	struct pokemon_info *pokemon;
+	lista_t *pista;
+};
+struct TP {
+	hash_t *hash_pokemones;
+	struct jugador *jugador1;
+	struct jugador *jugador2;
+};
+
 /*******************************************************************
  *               Funciones y estructuras auxiliares
  ******************************************************************/
@@ -40,7 +51,7 @@ typedef struct {
 bool agregar_clave(const char *clave, void *valor, void *aux)
 {
 	nombres_t *nombres = (nombres_t *)aux;
-	const struct TP *tp = nombres->tp;
+	const TP *tp = nombres->tp;
 	if ((tp_pokemon_seleccionado(tp, JUGADOR_1) &&
 	     strcmp(tp_pokemon_seleccionado(tp, JUGADOR_1)->nombre, clave) ==
 		     0) ||
@@ -129,7 +140,7 @@ void liberar_jugador(struct jugador *jugador)
 	}
 }
 // Asigna el jugador actual. Si el jugador actual es JUGADOR_1, devuelve el jugador1, sino el jugador2.
-struct jugador *asignar_jugador(const struct TP *tp,
+struct jugador *asignar_jugador(const TP *tp,
 				struct jugador *jugador_actual,
 				enum TP_JUGADOR jugador_enum)
 {
@@ -144,7 +155,7 @@ struct jugador *asignar_jugador(const struct TP *tp,
  *                      Funciones del TP
  ******************************************************************/
 
-struct TP *tp_crear(const char *nombre_archivo)
+TP *tp_crear(const char *nombre_archivo)
 {
 	if (!nombre_archivo)
 		return NULL;
@@ -153,7 +164,7 @@ struct TP *tp_crear(const char *nombre_archivo)
 	if (!file)
 		return NULL;
 
-	struct TP *tp = malloc(sizeof(struct TP));
+	TP *tp = malloc(sizeof(struct TP));
 	if (!tp) {
 		fclose(file);
 		return NULL;
@@ -251,14 +262,14 @@ struct TP *tp_crear(const char *nombre_archivo)
 	return tp;
 }
 
-int tp_cantidad_pokemon(struct TP *tp)
+int tp_cantidad_pokemon(TP *tp)
 {
 	if (!tp || !tp->hash_pokemones)
 		return 0;
 	return (int)hash_cantidad(tp->hash_pokemones);
 }
 
-const struct pokemon_info *tp_buscar_pokemon(const struct TP *tp,
+const struct pokemon_info *tp_buscar_pokemon(const TP *tp,
 					     const char *nombre)
 {
 	if (!tp || !tp->hash_pokemones || !nombre)
@@ -283,7 +294,7 @@ const struct pokemon_info *tp_buscar_pokemon(const struct TP *tp,
 	return pokemon;
 }
 
-char *tp_nombres_disponibles(const struct TP *tp)
+char *tp_nombres_disponibles(const TP *tp)
 {
 	if (!tp || !tp->hash_pokemones) {
 		return NULL;
@@ -335,7 +346,7 @@ char *tp_nombres_disponibles(const struct TP *tp)
 	return resultado;
 }
 
-bool tp_seleccionar_pokemon(const struct TP *tp, enum TP_JUGADOR jugador,
+bool tp_seleccionar_pokemon(const TP *tp, enum TP_JUGADOR jugador,
 			    const char *nombre)
 {
 	if (!tp || !tp->hash_pokemones || !nombre ||
@@ -384,7 +395,7 @@ bool tp_seleccionar_pokemon(const struct TP *tp, enum TP_JUGADOR jugador,
 	return true;
 }
 
-const struct pokemon_info *tp_pokemon_seleccionado(const struct TP *tp,
+const struct pokemon_info *tp_pokemon_seleccionado(const TP *tp,
 						   enum TP_JUGADOR jugador)
 {
 	if (!tp || (jugador != JUGADOR_1 && jugador != JUGADOR_2)) {
@@ -400,7 +411,7 @@ const struct pokemon_info *tp_pokemon_seleccionado(const struct TP *tp,
 	return jugador_seleccionado->pokemon;
 }
 
-unsigned tp_agregar_obstaculo(const struct TP *tp, enum TP_JUGADOR jugador,
+unsigned tp_agregar_obstaculo(const TP *tp, enum TP_JUGADOR jugador,
 			      enum TP_OBSTACULO obstaculo, unsigned posicion)
 {
 	if (!tp || (jugador != JUGADOR_1 && jugador != JUGADOR_2))
@@ -428,7 +439,7 @@ unsigned tp_agregar_obstaculo(const struct TP *tp, enum TP_JUGADOR jugador,
 	return (unsigned)lista_tamanio(jugador_actual->pista);
 }
 
-unsigned tp_quitar_obstaculo(const struct TP *tp, enum TP_JUGADOR jugador,
+unsigned tp_quitar_obstaculo(const TP *tp, enum TP_JUGADOR jugador,
 			     unsigned posicion)
 {
 	if (!tp || (jugador != JUGADOR_1 && jugador != JUGADOR_2))
@@ -448,7 +459,7 @@ unsigned tp_quitar_obstaculo(const struct TP *tp, enum TP_JUGADOR jugador,
 	return (unsigned)lista_tamanio(jugador_actual->pista);
 }
 
-char *tp_obstaculos_pista(const struct TP *tp, enum TP_JUGADOR jugador)
+char *tp_obstaculos_pista(const TP *tp, enum TP_JUGADOR jugador)
 {
 	if (!tp || (jugador != JUGADOR_1 && jugador != JUGADOR_2))
 		return NULL;
@@ -475,7 +486,7 @@ char *tp_obstaculos_pista(const struct TP *tp, enum TP_JUGADOR jugador)
 	return obstaculos_pista;
 }
 
-void tp_limpiar_pista(const struct TP *tp, enum TP_JUGADOR jugador)
+void tp_limpiar_pista(const TP *tp, enum TP_JUGADOR jugador)
 {
 	if (!tp || (jugador != JUGADOR_1 && jugador != JUGADOR_2))
 		return;
@@ -489,7 +500,7 @@ void tp_limpiar_pista(const struct TP *tp, enum TP_JUGADOR jugador)
 	}
 }
 
-unsigned tp_calcular_tiempo_pista(const struct TP *tp, enum TP_JUGADOR jugador)
+unsigned tp_calcular_tiempo_pista(const TP *tp, enum TP_JUGADOR jugador)
 {
 	if (!tp || (jugador != JUGADOR_1 && jugador != JUGADOR_2))
 		return 0;
@@ -532,7 +543,7 @@ unsigned tp_calcular_tiempo_pista(const struct TP *tp, enum TP_JUGADOR jugador)
 	return tiempo;
 }
 
-char *tp_tiempo_por_obstaculo(const struct TP *tp, enum TP_JUGADOR jugador)
+char *tp_tiempo_por_obstaculo(const TP *tp, enum TP_JUGADOR jugador)
 {
 	if (!tp || (jugador != JUGADOR_1 && jugador != JUGADOR_2))
 		return NULL;
@@ -595,7 +606,7 @@ char *tp_tiempo_por_obstaculo(const struct TP *tp, enum TP_JUGADOR jugador)
 	return csv_tiempo;
 }
 
-void tp_destruir(struct TP *tp)
+void tp_destruir(TP *tp)
 {
 	if (!tp)
 		return;
