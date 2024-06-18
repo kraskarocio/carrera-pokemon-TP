@@ -1,6 +1,6 @@
 # TP: Carrera de obstáculos
 
-## Commits
+## :spiral_notepad: Commits
 ```
 [ADD] Commit de adiciones al proyecto
 [DEL] Commit donde se remueven cosas
