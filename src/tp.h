@@ -9,7 +9,6 @@
 #include "hash.h"
 #include "quicksort.h"
 
-
 enum TP_JUGADOR { JUGADOR_1, JUGADOR_2 };
 
 enum TP_OBSTACULO {
@@ -22,17 +21,17 @@ struct pokemon_info {
 	char *nombre;
 	int fuerza, destreza, inteligencia;
 };
-
+struct jugador {
+	struct pokemon_info *pokemon;
+	lista_t *pista;
+};
 struct TP {
 	hash_t *hash_pokemones;
 	struct jugador *jugador1;
 	struct jugador *jugador2;
 };
 
-struct jugador {
-	struct pokemon_info *pokemon;
-	lista_t *pista;
-};
+
 
 /**
  * Crea un nuevo TP a partir de un archivo de texto.
