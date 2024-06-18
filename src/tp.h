@@ -5,9 +5,10 @@
 #define IDENTIFICADOR_OBSTACULO_FUERZA 'F'
 #define IDENTIFICADOR_OBSTACULO_DESTREZA 'D'
 #define IDENTIFICADOR_OBSTACULO_INTELIGENCIA 'I'
+#include "lista.h"
 #include "hash.h"
 #include "quicksort.h"
-#include "lista.h"
+
 
 enum TP_JUGADOR { JUGADOR_1, JUGADOR_2 };
 
