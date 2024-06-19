@@ -17,10 +17,10 @@ enum TP_OBSTACULO {
 	OBSTACULO_INTELIGENCIA
 };
 
-typedef struct tp {
-    hash_t *hash_pokemones;
-    struct jugador *jugador1;
-    struct jugador *jugador2;
+typedef struct {
+	hash_t *hash_pokemones;
+	struct jugador *jugador1;
+	struct jugador *jugador2;
 } TP;
 
 struct pokemon_info {

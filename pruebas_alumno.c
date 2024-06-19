@@ -97,7 +97,7 @@ void tp_buscar_con_otro_archivo_con_todos_los_pokemones()
 void tp_nombres_disponibles_pruebas_archivo_mas_chico()
 {
 	const char *nombre_del_archivo = "ejemplo/menos_pokemones.txt";
-    TP *tp = tp_crear(nombre_del_archivo);
+	TP *tp = tp_crear(nombre_del_archivo);
 	char *nombres = tp_nombres_disponibles(tp);
 	pa2m_afirmar(strcmp(nombres, "Blastoise,Ivysaur,Raichu,Wartortle") == 0,
 		     "Nombres correctos, archivo chico.");

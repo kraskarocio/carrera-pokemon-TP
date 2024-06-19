@@ -160,7 +160,6 @@ TP *tp_crear(const char *nombre_archivo)
 		free(tp);
 		return NULL;
 	}
-
 	tp->jugador1 = malloc(sizeof(struct jugador));
 	if (!tp->jugador1) {
 		fclose(file);
