@@ -173,7 +173,200 @@ void tp_seleccionar_pokemon_devuelve_correcto()
 	tp_destruir(tp);
 }
 
+void tp_quitar_obstaculos_cuando_no_hay_obstaculos()
+{
+	TP *tp = tp_crear("ejemplo/pokemones.txt");
+	pa2m_afirmar(tp_quitar_obstaculo(tp, JUGADOR_1, 0) == 0,
+		     "No hay obstaculos");
+	tp_destruir(tp);
+}
+void tp_quitar_obstaculos_pruebas()
+{
+	TP *tp = tp_crear("ejemplo/pokemones.txt");
+	pa2m_afirmar(tp_agregar_obstaculo(tp, JUGADOR_1, OBSTACULO_FUERZA, 0) ==
+			     1,
+		     "Se agrego correctamente el OBSTACULO_FUERZA");
+	pa2m_afirmar(tp_agregar_obstaculo(tp, JUGADOR_1, OBSTACULO_DESTREZA,
+					  1) == 2,
+		     "Se agrego correctamente el OBSTACULO_DESTREZA");
+	pa2m_afirmar(tp_agregar_obstaculo(tp, JUGADOR_1, OBSTACULO_INTELIGENCIA,
+					  2) == 3,
+		     "Se agrego correctamente el OBSTACULO_INTELIGENCIA");
+	pa2m_afirmar(tp_agregar_obstaculo(tp, JUGADOR_1, OBSTACULO_INTELIGENCIA,
+					  3) == 4,
+		     "Se agrego correctamente el OBSTACULO_INTELIGENCIA");
+	pa2m_afirmar(tp_agregar_obstaculo(tp, JUGADOR_1, OBSTACULO_INTELIGENCIA,
+					  0) == 5,
+		     "Se agrego correctamente el OBSTACULO_INTELIGENCIA");
+	pa2m_afirmar(tp_agregar_obstaculo(tp, JUGADOR_1, OBSTACULO_DESTREZA,
+					  1) == 6,
+		     "Se agrego correctamente el OBSTACULO_DESTREZA");
+	pa2m_afirmar(tp_quitar_obstaculo(tp, JUGADOR_1, 5) == 5,
+		     "Se quito correctamente");
+	pa2m_afirmar(tp_quitar_obstaculo(tp, JUGADOR_1, 4) == 4,
+		     "Se quito correctamente");
+	pa2m_afirmar(tp_quitar_obstaculo(tp, JUGADOR_1, 3) == 3,
+		     "Se quito correctamente");
+	pa2m_afirmar(tp_quitar_obstaculo(tp, JUGADOR_1, 2) == 2,
+		     "Se quito correctamente");
+	pa2m_afirmar(tp_quitar_obstaculo(tp, JUGADOR_1, 1) == 1,
+		     "Se quito correctamente");
+	pa2m_afirmar(tp_quitar_obstaculo(tp, JUGADOR_1, 0) == 0,
+		     "Se quito correctamente");
+	tp_destruir(tp);
+}
+void tp_agregar_obstaculo_pruebas()
+{
+	TP *tp = tp_crear("ejemplo/pokemones.txt");
+	pa2m_afirmar(tp_agregar_obstaculo(tp, JUGADOR_1, OBSTACULO_FUERZA, 0) ==
+			     1,
+		     "Se agrego correctamente el OBSTACULO_FUERZA");
+	pa2m_afirmar(tp_agregar_obstaculo(tp, JUGADOR_1, OBSTACULO_FUERZA, 1) ==
+			     2,
+		     "Se agrego correctamente el OBSTACULO_FUERZA");
+	pa2m_afirmar(tp_agregar_obstaculo(tp, JUGADOR_1, OBSTACULO_DESTREZA,
+					  2) == 3,
+		     "Se agrego correctamente el OBSTACULO_DESTREZA");
+	pa2m_afirmar(tp_agregar_obstaculo(tp, JUGADOR_1, OBSTACULO_INTELIGENCIA,
+					  3) == 4,
+		     "Se agrego correctamente el OBSTACULO_INTELIGENCIA");
+	pa2m_afirmar(tp_agregar_obstaculo(tp, JUGADOR_1, OBSTACULO_FUERZA, 0) ==
+			     5,
+		     "Se agrego correctamente el OBSTACULO_FUERZA");
+	pa2m_afirmar(tp_agregar_obstaculo(tp, JUGADOR_1, OBSTACULO_DESTREZA,
+					  1) == 6,
+		     "Se agrego correctamente el OBSTACULO_DESTREZA");
+	tp_destruir(tp);
+}
+void tp_quitar_obstaculos_pruebas_mezcladas()
+{
+	TP *tp = tp_crear("ejemplo/pokemones.txt");
+	pa2m_afirmar(tp_agregar_obstaculo(tp, JUGADOR_1, OBSTACULO_FUERZA, 0) ==
+			     1,
+		     "Se agrego correctamente el OBSTACULO_FUERZA");
+	pa2m_afirmar(tp_agregar_obstaculo(tp, JUGADOR_1, OBSTACULO_DESTREZA,
+					  1) == 2,
+		     "Se agrego correctamente el OBSTACULO_DESTREZA");
+	pa2m_afirmar(tp_agregar_obstaculo(tp, JUGADOR_1, OBSTACULO_INTELIGENCIA,
+					  2) == 3,
+		     "Se agrego correctamente el OBSTACULO_INTELIGENCIA");
+	pa2m_afirmar(tp_agregar_obstaculo(tp, JUGADOR_1, OBSTACULO_INTELIGENCIA,
+					  3) == 4,
+		     "Se agrego correctamente el OBSTACULO_INTELIGENCIA");
+	pa2m_afirmar(tp_agregar_obstaculo(tp, JUGADOR_1, OBSTACULO_INTELIGENCIA,
+					  0) == 5,
+		     "Se agrego correctamente el OBSTACULO_INTELIGENCIA");
+	pa2m_afirmar(tp_agregar_obstaculo(tp, JUGADOR_1, OBSTACULO_DESTREZA,
+					  1) == 6,
+		     "Se agrego correctamente el OBSTACULO_DESTREZA");
+	pa2m_afirmar(tp_quitar_obstaculo(tp, JUGADOR_1, 1) == 5,
+		     "Se quito correctamente");
+	pa2m_afirmar(tp_quitar_obstaculo(tp, JUGADOR_1, 1) == 4,
+		     "Se quito correctamente");
+	pa2m_afirmar(tp_quitar_obstaculo(tp, JUGADOR_1, 1) == 3,
+		     "Se quito correctamente");
+	pa2m_afirmar(tp_quitar_obstaculo(tp, JUGADOR_1, 1) == 2,
+		     "Se quito correctamente");
+	pa2m_afirmar(tp_quitar_obstaculo(tp, JUGADOR_1, 1) == 1,
+		     "Se quito correctamente");
+	pa2m_afirmar(tp_quitar_obstaculo(tp, JUGADOR_1, 0) == 0,
+		     "Se quito correctamente");
+	
+	tp_destruir(tp);
+}
 
+void tp_obstaculo_pista_pruebas_pista_chica()
+{
+	TP *tp = tp_crear("ejemplo/pokemones.txt");
+	pa2m_afirmar(tp_agregar_obstaculo(tp, JUGADOR_1, OBSTACULO_FUERZA, 0) ==
+			     1,
+		     "Se agrego correctamente el OBSTACULO_FUERZA");
+	pa2m_afirmar(tp_agregar_obstaculo(tp, JUGADOR_1, OBSTACULO_DESTREZA,
+					  1) == 2,
+		     "Se agrego correctamente el OBSTACULO_DESTREZA");
+	pa2m_afirmar(tp_agregar_obstaculo(tp, JUGADOR_1, OBSTACULO_INTELIGENCIA,
+					  2) == 3,
+		     "Se agrego correctamente el OBSTACULO_INTELIGENCIA");
+	pa2m_afirmar(tp_agregar_obstaculo(tp, JUGADOR_1, OBSTACULO_INTELIGENCIA,
+					  3) == 4,
+		     "Se agrego correctamente el OBSTACULO_INTELIGENCIA");
+	char *pista = tp_obstaculos_pista(tp, JUGADOR_1);
+	pa2m_afirmar(pista != NULL, "Pista no es NULL");
+	char pista_correcta[] = {
+		IDENTIFICADOR_OBSTACULO_FUERZA, IDENTIFICADOR_OBSTACULO_DESTREZA,
+				  IDENTIFICADOR_OBSTACULO_DESTREZA,
+				  IDENTIFICADOR_OBSTACULO_INTELIGENCIA,
+				  IDENTIFICADOR_OBSTACULO_INTELIGENCIA, '\0' };
+
+	pa2m_afirmar(strcmp(pista, pista_correcta) == 0, "Pista correcta");
+	free(pista);
+	tp_destruir(tp);
+}
+void tp_obstaculo_pista_pruebas_pista_grande()
+{
+	TP *tp = tp_crear("ejemplo/pokemones.txt");
+	pa2m_afirmar(tp_agregar_obstaculo(tp, JUGADOR_1, OBSTACULO_FUERZA, 0) ==
+			     1,
+		     "Se agrego correctamente el OBSTACULO_FUERZA");
+	pa2m_afirmar(tp_agregar_obstaculo(tp, JUGADOR_1, OBSTACULO_DESTREZA,
+					  1) == 2,
+		     "Se agrego correctamente el OBSTACULO_DESTREZA");
+	pa2m_afirmar(tp_agregar_obstaculo(tp, JUGADOR_1, OBSTACULO_INTELIGENCIA,
+					  2) == 3,
+		     "Se agrego correctamente el OBSTACULO_INTELIGENCIA");
+	pa2m_afirmar(tp_agregar_obstaculo(tp, JUGADOR_1, OBSTACULO_INTELIGENCIA,
+					  3) == 4,
+		     "Se agrego correctamente el OBSTACULO_INTELIGENCIA");
+	pa2m_afirmar(tp_agregar_obstaculo(tp, JUGADOR_1, OBSTACULO_INTELIGENCIA,
+					  4) == 5,
+		     "Se agrego correctamente el OBSTACULO_INTELIGENCIA");
+	pa2m_afirmar(tp_agregar_obstaculo(tp, JUGADOR_1, OBSTACULO_INTELIGENCIA,
+					  5) == 6,
+		     "Se agrego correctamente el OBSTACULO_INTELIGENCIA");
+	pa2m_afirmar(tp_agregar_obstaculo(tp, JUGADOR_1, OBSTACULO_INTELIGENCIA,
+					  6) == 7,
+		     "Se agrego correctamente el OBSTACULO_INTELIGENCIA");
+	pa2m_afirmar(tp_agregar_obstaculo(tp, JUGADOR_1, OBSTACULO_INTELIGENCIA,
+					  7) == 8,
+		     "Se agrego correctamente el OBSTACULO_INTELIGENCIA");
+	pa2m_afirmar(tp_agregar_obstaculo(tp, JUGADOR_1, OBSTACULO_INTELIGENCIA,
+					  10) == 9,
+		     "Se agrego correctamente el OBSTACULO_INTELIGENCIA");
+	char *pista = tp_obstaculos_pista(tp, JUGADOR_1);
+	pa2m_afirmar(pista != NULL, "Pista no es NULL");
+	char pista_correcta[] = { IDENTIFICADOR_OBSTACULO_FUERZA,
+				  IDENTIFICADOR_OBSTACULO_DESTREZA,
+				  IDENTIFICADOR_OBSTACULO_INTELIGENCIA,
+				  IDENTIFICADOR_OBSTACULO_INTELIGENCIA,
+				  IDENTIFICADOR_OBSTACULO_INTELIGENCIA,
+				  IDENTIFICADOR_OBSTACULO_INTELIGENCIA,
+				  IDENTIFICADOR_OBSTACULO_INTELIGENCIA,
+				  IDENTIFICADOR_OBSTACULO_INTELIGENCIA,
+				  IDENTIFICADOR_OBSTACULO_INTELIGENCIA,
+				  '\0' };
+	pa2m_afirmar(strcmp(pista, pista_correcta) == 0, "Pista correcta");
+	free(pista);
+	tp_destruir(tp);
+}
+
+void tp_obstaculo_pista_pruebas_pista_mixta()
+{
+	TP *tp = tp_crear("ejemplo/pokemones.txt");
+	pa2m_afirmar(tp_agregar_obstaculo(tp, JUGADOR_1, OBSTACULO_FUERZA, 0) ==
+			     1,
+		     "Se agrego correctamente el OBSTACULO_FUERZA");
+	pa2m_afirmar(tp_agregar_obstaculo(tp, JUGADOR_1, OBSTACULO_DESTREZA,
+					  0) == 2,
+		     "Se agrego correctamente el OBSTACULO_DESTREZA");
+	pa2m_afirmar(tp_agregar_obstaculo(tp, JUGADOR_1, OBSTACULO_INTELIGENCIA,
+					  1) == 3,
+		     "Se agrego correctamente el OBSTACULO_INTELIGENCIA");
+	char *pista = tp_obstaculos_pista(tp, JUGADOR_1);
+	pa2m_afirmar(pista != NULL, "Pista no es NULL");
+	pa2m_afirmar(strcmp(pista, "DIF") == 0, "Pista correcta");
+	free(pista);
+	tp_destruir(tp);
+}
 int main()
 {
 	pa2m_nuevo_grupo(
@@ -193,5 +386,20 @@ int main()
 	pa2m_nuevo_grupo(
 			"\n========= TP_SELECCIONAR_POKEMON / TP_POKEMON_SELECCIONADO =========");
 	tp_seleccionar_pokemon_devuelve_correcto();
+		pa2m_nuevo_grupo(
+		"\n======================== TP_AGREGAR_OBSTACULO ========================");
+	tp_agregar_obstaculo_pruebas();
+	pa2m_nuevo_grupo(
+			"\n======================== TP_QUITAR_OBSTACULO ========================");
+	tp_quitar_obstaculos_cuando_no_hay_obstaculos();
+	tp_quitar_obstaculos_pruebas();
+	pa2m_nuevo_grupo(
+		"\n---------------------- TP_QUITAR_OBSTACULO (mixtas) ----------------------");
+	tp_quitar_obstaculos_pruebas_mezcladas();
+	pa2m_nuevo_grupo(
+			"\n======================== TP_OBSTACULOS_PISTA ========================");
+	tp_obstaculo_pista_pruebas_pista_chica();
+	tp_obstaculo_pista_pruebas_pista_grande();
+	tp_obstaculo_pista_pruebas_pista_mixta();
 	return pa2m_mostrar_reporte();
 }
