@@ -117,7 +117,24 @@ void tp_nombres_disponibles_pruebas_archivo_grande()
 	free(nombres);
 	tp_destruir(tp);
 }
+void tp_nombres_disponibles_si_jugador_ya_tiene_seleccionado()
+{
+	const char *nombre_del_archivo = "ejemplo/pokemones.txt";
+	TP *tp = tp_crear(nombre_del_archivo);
+	bool resta = tp_seleccionar_pokemon(tp, JUGADOR_1, "Pikachu");
+	if (resta == false) {
+		printf("No se pudo seleccionar el pokemon\n");
+	}
 
+	char *nombres = tp_nombres_disponibles(tp);
+	pa2m_afirmar(
+		strcmp(nombres,
+		       "Articuno,Blastoise,Bulbasaur,Caterpie,Charizard,Diglett,Dragonair,Dragonite,Dratini,Ekans,Geodude,Grimer,Ivysaur,Meowth,Moltres,Pidgey,Raichu,Rattata,Sandshrew,Squirtle,Venusaur,Vulpix,Wartortle,Zapdos") ==
+			0,
+		"Nombres correctos, archivo grande.");
+	free(nombres);
+	tp_destruir(tp);
+}
 
 void tp_seleccionar_pokemon_devuelve_correcto()
 {
@@ -172,6 +189,7 @@ int main()
 		"\n======================== TP_NOMBRE_DISPONIBLES ========================");
 	tp_nombres_disponibles_pruebas_archivo_mas_chico();
 	tp_nombres_disponibles_pruebas_archivo_grande();
+	tp_nombres_disponibles_si_jugador_ya_tiene_seleccionado();
 	pa2m_nuevo_grupo(
 			"\n========= TP_SELECCIONAR_POKEMON / TP_POKEMON_SELECCIONADO =========");
 	tp_seleccionar_pokemon_devuelve_correcto();

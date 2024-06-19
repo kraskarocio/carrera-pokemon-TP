@@ -227,7 +227,18 @@ typedef struct {
 bool agregar_clave(const char *clave, void *valor, void *aux)
 {
 	nombres_t *nombres = (nombres_t *)aux;
-	//falta veriicar si algun jugador ya lo tiene
+	// hacer mas lindo
+	const TP *tp = nombres->tp;
+	if ((tp_pokemon_seleccionado((TP *)tp, JUGADOR_1)&& 
+		 tp_pokemon_seleccionado((TP *)tp, JUGADOR_1)->nombre&&
+	     strcmp(tp_pokemon_seleccionado((TP *)tp, JUGADOR_1)->nombre,
+		    clave) == 0) ||
+	    (tp_pokemon_seleccionado((TP *)tp, JUGADOR_2) &&
+		 tp_pokemon_seleccionado((TP *)tp, JUGADOR_2)->nombre &&
+	     strcmp(tp_pokemon_seleccionado((TP *)tp, JUGADOR_2)->nombre,
+		    clave) == 0)) {
+		return true;
+	}
 
 	if (nombres->cantidad == nombres->capacidad) {
 		size_t nueva_capacidad = nombres->capacidad * 2;
