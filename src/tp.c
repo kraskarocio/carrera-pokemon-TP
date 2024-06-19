@@ -19,6 +19,19 @@ void capitalizar_primera_letra(char *cadena)
 }
 
 
+char *copiar_nombre(const char *string_a_copiar)
+{
+	if (!string_a_copiar)
+		return NULL;
+
+	char *string_copiado = malloc(strlen(string_a_copiar) + 1);
+	if (!string_copiado)
+		return NULL;
+
+	strcpy(string_copiado, string_a_copiar);
+	return string_copiado;
+}
+
 TP *tp_crear(const char *nombre_archivo) {
     if (!nombre_archivo) {
         return NULL;
@@ -88,7 +101,7 @@ TP *tp_crear(const char *nombre_archivo) {
 	tp->pokemon_2->fuerza = 0;
 	tp->pokemon_2->destreza = 0;
 	tp->pokemon_2->inteligencia = 0;
-	
+
     char line[256];
     while (fgets(line, sizeof(line), file)) {
         struct pokemon_info *pokemon = malloc(sizeof(struct pokemon_info));
@@ -204,22 +217,152 @@ const struct pokemon_info *tp_buscar_pokemon(TP *tp, const char *nombre)
 	return hash_obtener(tp->hash_pokemones, nombre_modificable);
 }
 
+typedef struct {
+	char **nombres;
+	size_t cantidad;
+	size_t capacidad;
+	TP *tp;
+} nombres_t;
+
+bool agregar_clave(const char *clave, void *valor, void *aux)
+{
+	nombres_t *nombres = (nombres_t *)aux;
+	//falta veriicar si algun jugador ya lo tiene
+
+	if (nombres->cantidad == nombres->capacidad) {
+		size_t nueva_capacidad = nombres->capacidad * 2;
+		char **nuevos_nombres = realloc(
+			nombres->nombres, nueva_capacidad * sizeof(char *));
+		if (!nuevos_nombres) {
+			return false;
+		}
+		nombres->nombres = nuevos_nombres;
+		nombres->capacidad = nueva_capacidad;
+	}
+
+	nombres->nombres[nombres->cantidad] = copiar_nombre(clave);
+	if (!nombres->nombres[nombres->cantidad]) {
+		return false;
+	}
+	nombres->cantidad++;
+	return true;
+}
+
+int comparar(const void *a, const void *b)
+{
+	return strcmp(*(const char **)a, *(const char **)b);
+}
+
 
 char *tp_nombres_disponibles(TP *tp)
 {
-	return NULL;
+	if (!tp || !tp->hash_pokemones) {
+		return NULL;
+	}
+
+	nombres_t nombres;
+	nombres.nombres = malloc(10 * sizeof(char *));
+	if (!nombres.nombres) {
+		return NULL;
+	}
+	nombres.cantidad = 0;
+	nombres.capacidad = 10;
+	nombres.tp = tp;
+
+	hash_con_cada_clave(tp->hash_pokemones, agregar_clave, &nombres);
+
+	quicksort_alfabetico(nombres.nombres, nombres.cantidad);
+
+	size_t total_length = 0;
+	for (size_t i = 0; i < nombres.cantidad; i++) {
+		total_length += strlen(nombres.nombres[i]) + 1;
+	}
+
+	char *resultado = malloc(total_length + 1);
+	if (!resultado) {
+		for (size_t i = 0; i < nombres.cantidad; i++) {
+			free(nombres.nombres[i]);
+		}
+		free(nombres.nombres);
+		return NULL;
+	}
+
+	resultado[0] = '\0';
+	for (size_t i = 0; i < nombres.cantidad; i++) {
+		strcat(resultado, nombres.nombres[i]);
+		if (i < nombres.cantidad - 1) {
+			strcat(resultado, ",");
+		}
+		free(nombres.nombres[i]);
+	}
+	free(nombres.nombres);
+	return resultado;
 }
 
 bool tp_seleccionar_pokemon(TP *tp, enum TP_JUGADOR jugador, const char *nombre)
 {
-	return false;
+	if (!tp || !tp->hash_pokemones || !nombre ||
+        (jugador != JUGADOR_1 && jugador != JUGADOR_2)) {
+        return false;
+    }
+
+    struct pokemon_info *pokemon = hash_obtener(tp->hash_pokemones, nombre);
+    if (!pokemon) {
+        return false;
+    }
+
+    struct pokemon_info **jugador_actual;
+    struct pokemon_info **otro_jugador;
+    
+    if (jugador == JUGADOR_1) {
+        jugador_actual = &tp->pokemon_1;
+        otro_jugador = &tp->pokemon_2;
+    } else {
+        jugador_actual = &tp->pokemon_2;
+        otro_jugador = &tp->pokemon_1;
+    }
+
+    if (*otro_jugador && (*otro_jugador)->nombre && strcmp((*otro_jugador)->nombre, nombre) == 0) {
+    	return false;
+	}
+    if (*jugador_actual) {
+        free((*jugador_actual)->nombre);
+        free(*jugador_actual);
+    }
+
+    *jugador_actual = malloc(sizeof(struct pokemon_info));
+    if (!(*jugador_actual)) {
+        return false;
+    }
+
+    (*jugador_actual)->nombre = copiar_nombre(pokemon->nombre);
+    if (!(*jugador_actual)->nombre) {
+        free(*jugador_actual);
+        return false;
+    }
+
+    (*jugador_actual)->fuerza = pokemon->fuerza;
+    (*jugador_actual)->destreza = pokemon->destreza;
+    (*jugador_actual)->inteligencia = pokemon->inteligencia;
+
+    return true;
 }
 
-const struct pokemon_info *tp_pokemon_seleccionado(TP *tp,
-						   enum TP_JUGADOR jugador)
+const struct pokemon_info *tp_pokemon_seleccionado(TP *tp, enum TP_JUGADOR jugador)
 {
-	return NULL;
+    if (!tp || !tp->hash_pokemones) {
+        return NULL;
+    }
+
+    if (jugador == JUGADOR_1) {
+        return tp->pokemon_1;
+    } else if (jugador == JUGADOR_2) {
+        return tp->pokemon_2;
+    }
+
+    return NULL;
 }
+
 
 unsigned tp_agregar_obstaculo(TP *tp, enum TP_JUGADOR jugador,
 			      enum TP_OBSTACULO obstaculo, unsigned posicion)

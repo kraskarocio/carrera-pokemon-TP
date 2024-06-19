@@ -94,6 +94,68 @@ void tp_buscar_con_otro_archivo_con_todos_los_pokemones()
 	pa2m_afirmar(poke4->inteligencia == 7, "Pokemon 4. Atributo correcto");
 	tp_destruir(tp);
 }
+void tp_nombres_disponibles_pruebas_archivo_mas_chico()
+{
+	const char *nombre_del_archivo = "ejemplo/menos_pokemones.txt";
+	TP *tp = tp_crear(nombre_del_archivo);
+	char *nombres = tp_nombres_disponibles(tp);
+	pa2m_afirmar(strcmp(nombres, "Blastoise,Ivysaur,Raichu,Wartortle") == 0,
+		     "Nombres correctos, archivo chico.");
+	free(nombres);
+	tp_destruir(tp);
+}
+void tp_nombres_disponibles_pruebas_archivo_grande()
+{
+	const char *nombre_del_archivo = "ejemplo/pokemones.txt";
+	TP *tp = tp_crear(nombre_del_archivo);
+	char *nombres = tp_nombres_disponibles(tp);
+	pa2m_afirmar(
+		strcmp(nombres,
+		       "Articuno,Blastoise,Bulbasaur,Caterpie,Charizard,Diglett,Dragonair,Dragonite,Dratini,Ekans,Geodude,Grimer,Ivysaur,Meowth,Moltres,Pidgey,Pikachu,Raichu,Rattata,Sandshrew,Squirtle,Venusaur,Vulpix,Wartortle,Zapdos") ==
+			0,
+		"Nombres correctos, archivo grande.");
+	free(nombres);
+	tp_destruir(tp);
+}
+
+
+void tp_seleccionar_pokemon_devuelve_correcto()
+{
+	TP *tp = tp_crear("ejemplo/pokemones.txt");
+	pa2m_afirmar(tp_seleccionar_pokemon(tp, JUGADOR_1, "Pikachu") == true,
+		     "Se selecciono correctamente el pokemon");
+	pa2m_afirmar(tp_seleccionar_pokemon(tp, JUGADOR_2, "Pikachu") == false,
+		     "No se selecciono el mismo pokemon que el jugador 1");
+	pa2m_afirmar(tp_seleccionar_pokemon(tp, JUGADOR_2, "Blastoise") == true,
+		     "Se selecciono correctamente el pokemon");
+	pa2m_afirmar(tp_seleccionar_pokemon(tp, JUGADOR_1, "Blastoise") ==
+			     false,
+		     "No se selecciono el mismo pokemon que el jugador 2");
+	const struct pokemon_info *poke1 =
+		tp_pokemon_seleccionado(tp, JUGADOR_1);
+	const struct pokemon_info *poke2 =
+		tp_pokemon_seleccionado(tp, JUGADOR_2);
+	pa2m_afirmar(poke1 != NULL, "Pokemon 1 seleccionado no es NULL");
+	pa2m_afirmar(poke2 != NULL, "Pokemon 2 seleccionado no es NULL");
+	pa2m_afirmar(strcmp(poke1->nombre, "Pikachu") == 0,
+		     "Pokemon del jugador 1. Nombre correcto");
+	pa2m_afirmar(strcmp(poke2->nombre, "Blastoise") == 0,
+		     "Pokemon del jugador 2. Nombre correcto");
+	pa2m_afirmar(poke1->fuerza == 10,
+		     "Pokemon del jugador 1. Atributo correcto");
+	pa2m_afirmar(poke1->destreza == 9,
+		     "Pokemon del jugador 1. Atributo correcto");
+	pa2m_afirmar(poke1->inteligencia == 8,
+		     "Pokemon del jugador 1. Atributo correcto");
+	pa2m_afirmar(poke2->fuerza == 8,
+		     "Pokemon del jugador 2. Atributo correcto");
+	pa2m_afirmar(poke2->destreza == 8,
+		     "Pokemon del jugador 2. Atributo correcto");
+	pa2m_afirmar(poke2->inteligencia == 9,
+		     "Pokemon del jugador 2. Atributo correcto");
+	tp_destruir(tp);
+}
+
 
 int main()
 {
@@ -106,5 +168,12 @@ int main()
 	tp_bucar_un_nombre_de_pokemon_que_no_esta_devuelve_NULL();
 	tp_buscar_busco_pokemones();
 	tp_buscar_con_otro_archivo_con_todos_los_pokemones();
+		pa2m_nuevo_grupo(
+		"\n======================== TP_NOMBRE_DISPONIBLES ========================");
+	tp_nombres_disponibles_pruebas_archivo_mas_chico();
+	tp_nombres_disponibles_pruebas_archivo_grande();
+	pa2m_nuevo_grupo(
+			"\n========= TP_SELECCIONAR_POKEMON / TP_POKEMON_SELECCIONADO =========");
+	tp_seleccionar_pokemon_devuelve_correcto();
 	return pa2m_mostrar_reporte();
 }
