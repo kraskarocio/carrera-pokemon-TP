@@ -1,4 +1,7 @@
 #include "tp.h"
+#include "lista.h"
+#include "hash.h"
+#include "quicksort.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -6,7 +9,6 @@
 
 #define BUFFER_SIZE 100
 #define BUFFER_SIZE_MINI 6
-
 
 struct jugador {
 	struct pokemon_info *pokemon;
@@ -41,7 +43,7 @@ typedef struct {
 	char **nombres;
 	size_t cantidad;
 	size_t capacidad;
-	const struct TP *tp;
+	const TP *tp;
 } nombres_t;
 
 // Agrega una clave al arreglo de nombres.
@@ -140,8 +142,7 @@ void liberar_jugador(struct jugador *jugador)
 	}
 }
 // Asigna el jugador actual. Si el jugador actual es JUGADOR_1, devuelve el jugador1, sino el jugador2.
-struct jugador *asignar_jugador(const TP *tp,
-				struct jugador *jugador_actual,
+struct jugador *asignar_jugador(const TP *tp, struct jugador *jugador_actual,
 				enum TP_JUGADOR jugador_enum)
 {
 	if (jugador_enum == JUGADOR_1) {
@@ -269,8 +270,7 @@ int tp_cantidad_pokemon(TP *tp)
 	return (int)hash_cantidad(tp->hash_pokemones);
 }
 
-const struct pokemon_info *tp_buscar_pokemon(const TP *tp,
-					     const char *nombre)
+const struct pokemon_info *tp_buscar_pokemon(const TP *tp, const char *nombre)
 {
 	if (!tp || !tp->hash_pokemones || !nombre)
 		return NULL;
