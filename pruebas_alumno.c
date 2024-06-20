@@ -98,7 +98,7 @@ void tp_buscar_con_otro_archivo_con_todos_los_pokemones()
 	pa2m_afirmar(poke4->fuerza == 5, "Pokemon 4. Atributo correcto");
 	pa2m_afirmar(poke4->destreza == 8, "Pokemon 4. Atributo correcto");
 	pa2m_afirmar(poke4->inteligencia == 7, "Pokemon 4. Atributo correcto");
-	
+
 	tp_limpiar_pista(tp, JUGADOR_1);
 	tp_limpiar_pista(tp, JUGADOR_2);
 	tp_destruir(tp);
@@ -150,7 +150,26 @@ void tp_nombres_disponibles_si_jugador_ya_tiene_seleccionado()
 	tp_limpiar_pista(tp, JUGADOR_2);
 	tp_destruir(tp);
 }
-
+void tp_calcular_tiempo_pista_pruebas()
+{
+	TP *tp = tp_crear("ejemplo/pokemones.txt");
+	pa2m_afirmar(tp_agregar_obstaculo(tp, JUGADOR_1, OBSTACULO_FUERZA, 0) ==
+			     1,
+		     "Se agrego correctamente el OBSTACULO_FUERZA");
+	pa2m_afirmar(tp_agregar_obstaculo(tp, JUGADOR_1, OBSTACULO_DESTREZA,
+					  1) == 2,
+		     "Se agrego correctamente el OBSTACULO_DESTREZA");
+	pa2m_afirmar(tp_agregar_obstaculo(tp, JUGADOR_1, OBSTACULO_INTELIGENCIA,
+					  2) == 3,
+		     "Se agrego correctamente el OBSTACULO_INTELIGENCIA");
+	pa2m_afirmar(tp_seleccionar_pokemon(tp, JUGADOR_1, "Pikachu") == true,
+		     "Se selecciono correctamente el pokemon");
+	pa2m_afirmar(tp_calcular_tiempo_pista(tp, JUGADOR_1) == 3,
+		     "Tiempo correcto");
+	tp_limpiar_pista(tp, JUGADOR_1);
+	tp_limpiar_pista(tp, JUGADOR_2);
+	tp_destruir(tp);
+}
 void tp_seleccionar_pokemon_devuelve_correcto()
 {
 	TP *tp = tp_crear("ejemplo/pokemones.txt");
@@ -316,8 +335,7 @@ void tp_obstaculo_pista_pruebas_pista_chica()
 		     "Se agrego correctamente el OBSTACULO_INTELIGENCIA");
 	char *pista = tp_obstaculos_pista(tp, JUGADOR_1);
 	pa2m_afirmar(pista != NULL, "Pista no es NULL");
-	char pista_correcta[] = {
-		IDENTIFICADOR_OBSTACULO_FUERZA,
+	char pista_correcta[] = { IDENTIFICADOR_OBSTACULO_FUERZA,
 				  IDENTIFICADOR_OBSTACULO_DESTREZA,
 				  IDENTIFICADOR_OBSTACULO_INTELIGENCIA,
 				  IDENTIFICADOR_OBSTACULO_INTELIGENCIA, '\0' };
@@ -397,6 +415,34 @@ void tp_obstaculo_pista_pruebas_pista_mixta()
 	tp_limpiar_pista(tp, JUGADOR_1);
 	tp_destruir(tp);
 }
+
+void tp_tiempo_por_obstaculo_pruebas()
+{
+	TP *tp = tp_crear("ejemplo/pokemones.txt");
+	pa2m_afirmar(tp_agregar_obstaculo(tp, JUGADOR_1, OBSTACULO_FUERZA, 0) ==
+			     1,
+		     "Se agrego correctamente el OBSTACULO_FUERZA");
+	pa2m_afirmar(tp_agregar_obstaculo(tp, JUGADOR_1, OBSTACULO_DESTREZA,
+					  1) == 2,
+		     "Se agrego correctamente el OBSTACULO_DESTREZA");
+	pa2m_afirmar(tp_agregar_obstaculo(tp, JUGADOR_1, OBSTACULO_INTELIGENCIA,
+					  2) == 3,
+		     "Se agrego correctamente el OBSTACULO_INTELIGENCIA");
+	pa2m_afirmar(tp_seleccionar_pokemon(tp, JUGADOR_1, "Pikachu") == true,
+		     "Se selecciono correctamente el pokemon");
+	pa2m_afirmar(tp_calcular_tiempo_pista(tp, JUGADOR_1) == 3,
+		     "Tiempo correcto");
+	char *tiempo_por_obstaculo = tp_tiempo_por_obstaculo(tp, JUGADOR_1);
+
+	pa2m_afirmar(tiempo_por_obstaculo != NULL,
+		     "Tiempo por obstaculo no es NULL");
+	pa2m_afirmar(strcmp(tiempo_por_obstaculo, "0,1,2") == 0,
+		     "Tiempo por obstaculo correcto");
+	free(tiempo_por_obstaculo);
+	tp_limpiar_pista(tp, JUGADOR_1);
+	tp_limpiar_pista(tp, JUGADOR_2);
+	tp_destruir(tp);
+}
 int main()
 {
 	pa2m_nuevo_grupo(
@@ -408,28 +454,34 @@ int main()
 	tp_bucar_un_nombre_de_pokemon_que_no_esta_devuelve_NULL();
 	tp_buscar_busco_pokemones();
 	tp_buscar_con_otro_archivo_con_todos_los_pokemones();
-		pa2m_nuevo_grupo(
+	pa2m_nuevo_grupo(
 		"\n======================== TP_NOMBRE_DISPONIBLES ========================");
 	tp_nombres_disponibles_pruebas_archivo_mas_chico();
 	tp_nombres_disponibles_pruebas_archivo_grande();
 	tp_nombres_disponibles_si_jugador_ya_tiene_seleccionado();
 	pa2m_nuevo_grupo(
-			"\n========= TP_SELECCIONAR_POKEMON / TP_POKEMON_SELECCIONADO =========");
+		"\n========= TP_SELECCIONAR_POKEMON / TP_POKEMON_SELECCIONADO =========");
 	tp_seleccionar_pokemon_devuelve_correcto();
-		pa2m_nuevo_grupo(
+	pa2m_nuevo_grupo(
 		"\n======================== TP_AGREGAR_OBSTACULO ========================");
 	tp_agregar_obstaculo_pruebas();
 	pa2m_nuevo_grupo(
-			"\n======================== TP_QUITAR_OBSTACULO ========================");
+		"\n======================== TP_QUITAR_OBSTACULO ========================");
 	tp_quitar_obstaculos_cuando_no_hay_obstaculos();
 	tp_quitar_obstaculos_pruebas();
 	pa2m_nuevo_grupo(
 		"\n---------------------- TP_QUITAR_OBSTACULO (mixtas) ----------------------");
 	tp_quitar_obstaculos_pruebas_mezcladas();
 	pa2m_nuevo_grupo(
-			"\n======================== TP_OBSTACULOS_PISTA ========================");
+		"\n======================== TP_OBSTACULOS_PISTA ========================");
 	tp_obstaculo_pista_pruebas_pista_chica();
 	tp_obstaculo_pista_pruebas_pista_grande();
 	tp_obstaculo_pista_pruebas_pista_mixta();
+	pa2m_nuevo_grupo(
+		"\n======================== TP_CALCULAR_TIEMPO_PISTA ========================");
+	tp_calcular_tiempo_pista_pruebas();
+	pa2m_nuevo_grupo(
+		"\n======================== TP_TIEMPO_POR_OBSTACULO ========================");
+	tp_tiempo_por_obstaculo_pruebas();
 	return pa2m_mostrar_reporte();
 }

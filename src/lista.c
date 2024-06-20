@@ -198,13 +198,13 @@ void lista_destruir_todo(lista_t *lista, void (*funcion)(void *))
 	if (!lista || !funcion) {
 		return;
 	}
-    while (!lista_vacia(lista)) {
-        void* dato = lista_quitar(lista);
-        if (funcion) {
-            funcion(dato);
-        }
-    }
-    free(lista);
+	while (!lista_vacia(lista)) {
+		void *dato = lista_quitar(lista);
+		if (funcion) {
+			funcion(dato);
+		}
+	}
+	free(lista);
 }
 
 lista_iterador_t *lista_iterador_crear(lista_t *lista)
