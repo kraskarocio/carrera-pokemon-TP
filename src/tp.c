@@ -509,10 +509,34 @@ char *tp_obstaculos_pista(TP *tp, enum TP_JUGADOR jugador)
 
 	return obstaculos_pista;
 }
+void destruir_obstaculo(void* obstaculo) {
+	if(obstaculo != NULL){
+		free(obstaculo);
+		obstaculo = NULL;
+	}
+}
 
 void tp_limpiar_pista(TP *tp, enum TP_JUGADOR jugador)
 {
-	return;
+	if (!tp || (jugador != JUGADOR_1 && jugador != JUGADOR_2))
+		return;
+
+	lista_t *pista_actual;
+	if (jugador == JUGADOR_1) {
+		if (!tp->pista_1) {
+			return;
+		}
+		pista_actual = tp->pista_1;
+	} else {
+		if (!tp->pista_2) {
+			return;
+		}
+		pista_actual = tp->pista_2;
+	}
+
+	if (pista_actual) {
+		lista_destruir_todo(pista_actual, destruir_obstaculo);
+	}
 }
 
 unsigned tp_calcular_tiempo_pista(TP *tp, enum TP_JUGADOR jugador)
@@ -531,39 +555,37 @@ bool liberar(const char *clave, void *valor, void *aux)
 	free(pokemon);
 	return true;
 }
-void destruir_obstaculo(void* obstaculo) {
+/* void destruir_obstaculo(void* obstaculo) {
 	if(obstaculo != NULL){
 		free(obstaculo);
 		obstaculo = NULL;
 	}
-}
-/*
-void lista_destruir_con_obstaculos(lista_t *lista) {
-    void* aux = NULL;
-    lista_con_cada_elemento(lista, destruir_obstaculo, aux);
-}
- */
-
+} */
 void tp_destruir(TP* tp) {
-    if(tp) {
+    if(tp != NULL) {
         if(tp->hash_pokemones) {
             hash_con_cada_clave(tp->hash_pokemones, liberar, NULL);
             hash_destruir(tp->hash_pokemones);
         }
         if(tp->pokemon_1) {
-            free(tp->pokemon_1->nombre);
-            free(tp->pokemon_1);
+			if (tp->pokemon_1->nombre != NULL)
+			{
+				free(tp->pokemon_1->nombre);
+			}
+			    free(tp->pokemon_1);
         }
         if(tp->pokemon_2) {
-            free(tp->pokemon_2->nombre);
-            free(tp->pokemon_2);
+            if (tp->pokemon_2->nombre != NULL){
+				free(tp->pokemon_2->nombre);
+			}
+			free(tp->pokemon_2);
         }
-        if(tp->pista_1) {
-            lista_destruir_todo(tp->pista_1, destruir_obstaculo);
+/*         if(tp->pista_1 != NULL) {
+            lista_destruir(tp->pista_1);
         }
-        if(tp->pista_2) {
-            lista_destruir_todo(tp->pista_2, destruir_obstaculo);
-        }
+        if(tp->pista_2 != NULL) {
+            lista_destruir(tp->pista_2);
+        }  */
         free(tp);
     }
 }

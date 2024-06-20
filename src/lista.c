@@ -207,7 +207,6 @@ void lista_destruir_todo(lista_t *lista, void (*funcion)(void *))
     free(lista);
 }
 
-
 lista_iterador_t *lista_iterador_crear(lista_t *lista)
 {
 	if (!lista)
