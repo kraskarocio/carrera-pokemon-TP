@@ -123,6 +123,7 @@ void *lista_quitar_de_posicion(lista_t *lista, size_t posicion)
 	nodo_t *nodo_a_quitar = nodo_precesor->siguiente;
 	nodo_t *elemento_a_quitar = nodo_a_quitar->elemento;
 	nodo_precesor->siguiente = nodo_a_quitar->siguiente;
+
 	free(nodo_a_quitar);
 	lista->tamaño--;
 	return elemento_a_quitar;
@@ -194,23 +195,19 @@ void lista_destruir(lista_t *lista)
 }
 void lista_destruir_todo(lista_t *lista, void (*funcion)(void *))
 {
-	if (lista == NULL) {
+	if (!lista || !funcion) {
 		return;
 	}
-
-	nodo_t *actual = lista->nodo_inicio;
-	while (actual != NULL) {
-		nodo_t *siguiente = actual->siguiente;
-
-		if (funcion != NULL) {
-			funcion(actual->elemento);
-		}
-
-		free(actual);
-		actual = siguiente;
-	}
-	free(lista);
+    while (!lista_vacia(lista)) {
+        void* dato = lista_quitar(lista);
+        if (funcion) {
+            funcion(dato);
+        }
+    }
+    free(lista);
 }
+
+
 lista_iterador_t *lista_iterador_crear(lista_t *lista)
 {
 	if (!lista)

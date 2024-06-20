@@ -293,7 +293,7 @@ void tp_obstaculo_pista_pruebas_pista_chica()
 	char *pista = tp_obstaculos_pista(tp, JUGADOR_1);
 	pa2m_afirmar(pista != NULL, "Pista no es NULL");
 	char pista_correcta[] = {
-		IDENTIFICADOR_OBSTACULO_FUERZA, IDENTIFICADOR_OBSTACULO_DESTREZA,
+		IDENTIFICADOR_OBSTACULO_FUERZA,
 				  IDENTIFICADOR_OBSTACULO_DESTREZA,
 				  IDENTIFICADOR_OBSTACULO_INTELIGENCIA,
 				  IDENTIFICADOR_OBSTACULO_INTELIGENCIA, '\0' };
