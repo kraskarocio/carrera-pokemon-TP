@@ -1,17 +1,33 @@
 #include "tp.h"
-#include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <ctype.h>
+#include <string.h>
+#include <stdio.h>
+#include "hash.h"
+#include "lista.h"
+#include "quicksort.h"
 
-#define BUFFER_SIZE 100
-#define BUFFER_SIZE_MINI 6
+struct tp {
+	hash_t *hash_pokemones;
+	struct pokemon_info *pokemon_1;
+	lista_t *pista_1;
+	struct pokemon_info *pokemon_2;
+	lista_t *pista_2;
+};
 
-/*******************************************************************
- *               Funciones y estructuras auxiliares
- ******************************************************************/
+void capitalizar_primera_letra(char *cadena)
+{
+	if (cadena == NULL || strlen(cadena) == 0) {
+		return;
+	}
 
-// Devuelve una copia de la cadena.
+	cadena[0] = (char)toupper((unsigned char)cadena[0]);
+
+	for (int i = 1; cadena[i] != '\0'; i++) {
+		cadena[i] = (char)tolower((unsigned char)cadena[i]);
+	}
+}
+
 char *copiar_nombre(const char *string_a_copiar)
 {
 	if (!string_a_copiar)
@@ -24,29 +40,156 @@ char *copiar_nombre(const char *string_a_copiar)
 	strcpy(string_copiado, string_a_copiar);
 	return string_copiado;
 }
-// Estructura que guarda los nombres de los pokemones.
-// Se utiliza para poder ordenarlos alfabéticamente. En la función tp_nombres_disponibles.
+
+TP *tp_crear(const char *nombre_archivo)
+{
+	if (!nombre_archivo) {
+		return NULL;
+	}
+
+	FILE *file = fopen(nombre_archivo, "r");
+	if (!file) {
+		return NULL;
+	}
+
+	TP *tp = malloc(sizeof(TP));
+	if (!tp) {
+		fclose(file);
+		return NULL;
+	}
+
+	tp->hash_pokemones = hash_crear(10);
+	if (!tp->hash_pokemones) {
+		fclose(file);
+		free(tp);
+		return NULL;
+	}
+
+	tp->pista_1 = NULL;
+
+	tp->pista_2 = NULL;
+	tp->pokemon_1 = NULL;
+
+	tp->pokemon_2 = NULL;
+
+	char line[256];
+	while (fgets(line, sizeof(line), file)) {
+		struct pokemon_info *pokemon =
+			malloc(sizeof(struct pokemon_info));
+		if (!pokemon) {
+			fclose(file);
+
+			hash_destruir(tp->hash_pokemones);
+			free(tp);
+			return NULL;
+		}
+
+		char *token = strtok(line, ",");
+		if (!token) {
+			free(pokemon);
+			fclose(file);
+
+			hash_destruir(tp->hash_pokemones);
+			free(tp);
+			return NULL;
+		}
+
+		pokemon->nombre = malloc(strlen(token) + 1);
+		if (!pokemon->nombre) {
+			free(pokemon);
+			fclose(file);
+
+			hash_destruir(tp->hash_pokemones);
+			free(tp);
+			return NULL;
+		}
+
+		strcpy(pokemon->nombre, token);
+
+		token = strtok(NULL, ",");
+		if (!token) {
+			free(pokemon->nombre);
+			free(pokemon);
+			fclose(file);
+
+			hash_destruir(tp->hash_pokemones);
+			free(tp);
+			return NULL;
+		}
+
+		pokemon->fuerza = atoi(token);
+
+		token = strtok(NULL, ",");
+		if (!token) {
+			free(pokemon->nombre);
+			free(pokemon);
+			fclose(file);
+
+			hash_destruir(tp->hash_pokemones);
+			free(tp);
+			return NULL;
+		}
+
+		pokemon->destreza = atoi(token);
+
+		token = strtok(NULL, ",");
+		if (!token) {
+			free(pokemon->nombre);
+			free(pokemon);
+			fclose(file);
+
+			hash_destruir(tp->hash_pokemones);
+			free(tp);
+			return NULL;
+		}
+
+		pokemon->inteligencia = atoi(token);
+
+		hash_insertar(tp->hash_pokemones, pokemon->nombre, pokemon,
+			      NULL);
+	}
+
+	fclose(file);
+	return tp;
+}
+
+int tp_cantidad_pokemon(TP *tp)
+{
+	if (!tp || !tp->hash_pokemones)
+		return -1;
+	return (int)hash_cantidad(tp->hash_pokemones);
+}
+
+const struct pokemon_info *tp_buscar_pokemon(TP *tp, const char *nombre)
+{
+	if (!tp || !tp->hash_pokemones || !nombre)
+		return NULL;
+	char nombre_modificable[strlen(nombre) + 1];
+	strcpy(nombre_modificable, nombre);
+	capitalizar_primera_letra(nombre_modificable);
+	return hash_obtener(tp->hash_pokemones, nombre_modificable);
+}
+
 typedef struct {
 	char **nombres;
 	size_t cantidad;
 	size_t capacidad;
-	const struct TP *tp;
+	TP *tp;
 } nombres_t;
 
-// Agrega una clave al arreglo de nombres.
-// Devuelve false si no se pudo agregar la clave.
-// Se usa en la función hash_con_cada_clave.
-// Si la clave coincide con un nombre de un pokemon ya elegido, no se agrega.
 bool agregar_clave(const char *clave, void *valor, void *aux)
 {
 	nombres_t *nombres = (nombres_t *)aux;
-	const struct TP *tp = nombres->tp;
-	if ((tp_pokemon_seleccionado(tp, JUGADOR_1) &&
-	     strcmp(tp_pokemon_seleccionado(tp, JUGADOR_1)->nombre, clave) ==
-		     0) ||
-	    (tp_pokemon_seleccionado(tp, JUGADOR_2) &&
-	     strcmp(tp_pokemon_seleccionado(tp, JUGADOR_2)->nombre, clave) ==
-		     0)) {
+	// hacer mas lindo
+	const TP *tp = nombres->tp;
+	if ((tp_pokemon_seleccionado((TP *)tp, JUGADOR_1) &&
+	     tp_pokemon_seleccionado((TP *)tp, JUGADOR_1)->nombre &&
+	     strcmp(tp_pokemon_seleccionado((TP *)tp, JUGADOR_1)->nombre,
+		    clave) == 0) ||
+	    (tp_pokemon_seleccionado((TP *)tp, JUGADOR_2) &&
+	     tp_pokemon_seleccionado((TP *)tp, JUGADOR_2)->nombre &&
+	     strcmp(tp_pokemon_seleccionado((TP *)tp, JUGADOR_2)->nombre,
+		    clave) == 0)) {
 		return true;
 	}
 
@@ -69,251 +212,36 @@ bool agregar_clave(const char *clave, void *valor, void *aux)
 	return true;
 }
 
-// Compara dos cadenas. Es utilizada en la función qsort.
 int comparar(const void *a, const void *b)
 {
 	return strcmp(*(const char **)a, *(const char **)b);
 }
 
-// Estructura auxiliar para agregar un obstáculo a un string.
-// Se utiliza en la función lista_con_cada_elemento.
-typedef struct {
-	char *obstaculos_pista;
-	size_t posicion;
-} obstaculos_pista_aux_t;
-
-// Agrega un obstáculo a un string.
-// Devuelve false si no se pudo agregar el obstáculo.
-// Se usa en la función lista_con_cada_elemento.
-bool agregar_obstaculo_a_string(void *obstaculo, void *contexto)
-{
-	obstaculos_pista_aux_t *aux = (obstaculos_pista_aux_t *)contexto;
-	char letra_obstaculo = '\0';
-	switch ((enum TP_OBSTACULO)obstaculo) {
-	case OBSTACULO_FUERZA:
-		letra_obstaculo = 'F';
-		break;
-	case OBSTACULO_DESTREZA:
-		letra_obstaculo = 'D';
-		break;
-	case OBSTACULO_INTELIGENCIA:
-		letra_obstaculo = 'I';
-		break;
-	default:
-		return false;
-	}
-	aux->obstaculos_pista[aux->posicion] = letra_obstaculo;
-	aux->posicion++;
-	return true;
-}
-
-// Estructura auxiliar para liberar los nombres de los pokemones ubicados en el hash.
-bool liberar(const char *clave, void *valor, void *aux)
-{
-	struct pokemon_info *pokemon = (struct pokemon_info *)valor;
-	free(pokemon->nombre);
-	free(pokemon);
-	return true;
-}
-void liberar_jugador(struct jugador *jugador)
-{
-	if (jugador) {
-		if (jugador->pokemon) {
-			free(jugador->pokemon->nombre);
-			free(jugador->pokemon);
-		}
-		if (jugador->pista) {
-			lista_destruir(jugador->pista);
-		}
-		free(jugador);
-	}
-}
-// Asigna el jugador actual. Si el jugador actual es JUGADOR_1, devuelve el jugador1, sino el jugador2.
-struct jugador *asignar_jugador(const struct TP *tp,
-				struct jugador *jugador_actual,
-				enum TP_JUGADOR jugador_enum)
-{
-	if (jugador_enum == JUGADOR_1) {
-		jugador_actual = tp->jugador1;
-	} else {
-		jugador_actual = tp->jugador2;
-	}
-	return jugador_actual;
-}
-/*******************************************************************
- *                      Funciones del TP
- ******************************************************************/
-
-struct TP *tp_crear(const char *nombre_archivo)
-{
-	if (!nombre_archivo)
-		return NULL;
-
-	FILE *file = fopen(nombre_archivo, "r");
-	if (!file)
-		return NULL;
-
-	struct TP *tp = malloc(sizeof(struct TP));
-	if (!tp) {
-		fclose(file);
-		return NULL;
-	}
-
-	tp->hash_pokemones = hash_crear(10);
-	if (!tp->hash_pokemones) {
-		fclose(file);
-		free(tp);
-		return NULL;
-	}
-
-	tp->jugador1 = malloc(sizeof(struct jugador));
-	if (!tp->jugador1) {
-		fclose(file);
-		hash_destruir(tp->hash_pokemones);
-		free(tp);
-		return NULL;
-	}
-	tp->jugador1->pista = NULL;
-	tp->jugador1->pokemon = NULL;
-
-	tp->jugador2 = malloc(sizeof(struct jugador));
-	if (!tp->jugador2) {
-		fclose(file);
-		hash_destruir(tp->hash_pokemones);
-		free(tp->jugador1);
-		free(tp);
-		return NULL;
-	}
-	tp->jugador2->pista = NULL;
-	tp->jugador2->pokemon = NULL;
-
-	char line[256];
-	while (fgets(line, sizeof(line), file)) {
-		struct pokemon_info *pokemon =
-			malloc(sizeof(struct pokemon_info));
-		if (!pokemon) {
-			fclose(file);
-			hash_destruir(tp->hash_pokemones);
-			tp_destruir(tp);
-			return NULL;
-		}
-
-		char *token = strtok(line, ",");
-		if (!token) {
-			free(pokemon);
-			fclose(file);
-			tp_destruir(tp);
-			return NULL;
-		}
-		pokemon->nombre = malloc(strlen(token) + 1);
-		if (!pokemon->nombre) {
-			free(pokemon);
-			fclose(file);
-			tp_destruir(tp);
-			return NULL;
-		}
-		strcpy(pokemon->nombre, token);
-
-		token = strtok(NULL, ",");
-		if (!token) {
-			free(pokemon->nombre);
-			free(pokemon);
-			fclose(file);
-			hash_destruir(tp->hash_pokemones);
-			return NULL;
-		}
-		pokemon->fuerza = atoi(token);
-
-		token = strtok(NULL, ",");
-		if (!token) {
-			free(pokemon->nombre);
-			free(pokemon);
-			fclose(file);
-			tp_destruir(tp);
-			return NULL;
-		}
-		pokemon->destreza = atoi(token);
-
-		token = strtok(NULL, ",");
-		if (!token) {
-			free(pokemon->nombre);
-			free(pokemon);
-			fclose(file);
-			tp_destruir(tp);
-			return NULL;
-		}
-		pokemon->inteligencia = atoi(token);
-		hash_insertar(tp->hash_pokemones, pokemon->nombre, pokemon,
-			      NULL);
-	}
-
-	fclose(file);
-	return tp;
-}
-
-int tp_cantidad_pokemon(struct TP *tp)
-{
-	if (!tp || !tp->hash_pokemones)
-		return 0;
-	return (int)hash_cantidad(tp->hash_pokemones);
-}
-
-const struct pokemon_info *tp_buscar_pokemon(const struct TP *tp,
-					     const char *nombre)
-{
-	if (!tp || !tp->hash_pokemones || !nombre)
-		return NULL;
-	size_t len = strlen(nombre);
-	char *nombre_modificado = malloc(len + 1);
-	if (!nombre_modificado)
-		return NULL;
-	if (len > 0) {
-		nombre_modificado[0] = (char)toupper(nombre[0]);
-		for (size_t i = 1; i < len; i++) {
-			nombre_modificado[i] = (char)tolower(nombre[i]);
-		}
-	}
-	nombre_modificado[len] = '\0';
-
-	struct pokemon_info *pokemon =
-		hash_obtener(tp->hash_pokemones, nombre_modificado);
-
-	free(nombre_modificado);
-
-	return pokemon;
-}
-
-char *tp_nombres_disponibles(const struct TP *tp)
+char *tp_nombres_disponibles(TP *tp)
 {
 	if (!tp || !tp->hash_pokemones) {
 		return NULL;
 	}
 
-	size_t cantidad_inicial = 10;
 	nombres_t nombres;
-	nombres.nombres = malloc(cantidad_inicial * sizeof(char *));
-	nombres.cantidad = 0;
-	nombres.capacidad = cantidad_inicial;
-	nombres.tp = tp;
+	nombres.nombres = malloc(10 * sizeof(char *));
 	if (!nombres.nombres) {
 		return NULL;
 	}
+	nombres.cantidad = 0;
+	nombres.capacidad = 10;
+	nombres.tp = tp;
 
 	hash_con_cada_clave(tp->hash_pokemones, agregar_clave, &nombres);
 
-	if (nombres.cantidad == 0) {
-		free(nombres.nombres);
-		return NULL;
-	}
-
 	quicksort_alfabetico(nombres.nombres, nombres.cantidad);
 
-	size_t longitud_total = 0;
+	size_t total_length = 0;
 	for (size_t i = 0; i < nombres.cantidad; i++) {
-		longitud_total += strlen(nombres.nombres[i]) + 1;
+		total_length += strlen(nombres.nombres[i]) + 1;
 	}
 
-	char *resultado = malloc(longitud_total + 1);
+	char *resultado = malloc(total_length + 1);
 	if (!resultado) {
 		for (size_t i = 0; i < nombres.cantidad; i++) {
 			free(nombres.nombres[i]);
@@ -331,219 +259,327 @@ char *tp_nombres_disponibles(const struct TP *tp)
 		free(nombres.nombres[i]);
 	}
 	free(nombres.nombres);
-
 	return resultado;
 }
 
-bool tp_seleccionar_pokemon(const struct TP *tp, enum TP_JUGADOR jugador,
-			    const char *nombre)
+bool tp_seleccionar_pokemon(TP *tp, enum TP_JUGADOR jugador, const char *nombre)
 {
 	if (!tp || !tp->hash_pokemones || !nombre ||
 	    (jugador != JUGADOR_1 && jugador != JUGADOR_2)) {
 		return false;
 	}
-
-	struct pokemon_info *pokemon = hash_obtener(tp->hash_pokemones, nombre);
-	if (!pokemon) {
+	char *c_aux;
+	c_aux = malloc(strlen(nombre) + 1);
+	strcpy(c_aux, nombre);
+	capitalizar_primera_letra(c_aux);
+	struct pokemon_info *pokemon = hash_obtener(tp->hash_pokemones, c_aux);
+	if (pokemon == NULL) {
+		free(c_aux);
 		return false;
 	}
-	struct jugador *jugador_actual =
-		asignar_jugador(tp, jugador_actual, jugador);
-	struct jugador *otro_jugador;
+
+	struct pokemon_info **poke_jugador_actual;
+	struct pokemon_info **poke_otro_jugador;
+
 	if (jugador == JUGADOR_1) {
-		otro_jugador = tp->jugador2;
+		poke_jugador_actual = &tp->pokemon_1;
+		poke_otro_jugador = &tp->pokemon_2;
 	} else {
-		otro_jugador = tp->jugador1;
+		poke_jugador_actual = &tp->pokemon_2;
+		poke_otro_jugador = &tp->pokemon_1;
 	}
 
-	if (otro_jugador && otro_jugador->pokemon &&
-	    strcmp(otro_jugador->pokemon->nombre, nombre) == 0) {
+	if (*poke_otro_jugador && (*poke_otro_jugador)->nombre &&
+	    strcmp((*poke_otro_jugador)->nombre, nombre) == 0) {
+		free(c_aux);
 		return false;
 	}
-
-	if (jugador_actual->pokemon) {
-		free(jugador_actual->pokemon->nombre);
-		free(jugador_actual->pokemon);
+	if (*poke_jugador_actual != NULL) {
+		free(*poke_jugador_actual);
+		if ((*poke_jugador_actual)->nombre != NULL) {
+			free((*poke_jugador_actual)->nombre);
+		}
 	}
-
-	jugador_actual->pokemon = malloc(sizeof(struct pokemon_info));
-	if (!jugador_actual->pokemon) {
-		return false;
-	}
-
-	jugador_actual->pokemon->nombre = copiar_nombre(pokemon->nombre);
-	if (!jugador_actual->pokemon->nombre) {
-		free(jugador_actual->pokemon);
-		return false;
-	}
-
-	jugador_actual->pokemon->fuerza = pokemon->fuerza;
-	jugador_actual->pokemon->destreza = pokemon->destreza;
-	jugador_actual->pokemon->inteligencia = pokemon->inteligencia;
-
+	*poke_jugador_actual = pokemon;
+	free(c_aux);
 	return true;
 }
 
-const struct pokemon_info *tp_pokemon_seleccionado(const struct TP *tp,
+const struct pokemon_info *tp_pokemon_seleccionado(TP *tp,
 						   enum TP_JUGADOR jugador)
+{
+	if (!tp || !tp->hash_pokemones) {
+		return NULL;
+	}
+
+	struct pokemon_info *poke_sel = (jugador == JUGADOR_1) ? tp->pokemon_1 :
+								 tp->pokemon_2;
+
+	if (poke_sel) {
+		return poke_sel;
+	}
+	return NULL;
+}
+
+unsigned tp_agregar_obstaculo(TP *tp, enum TP_JUGADOR jugador,
+			      enum TP_OBSTACULO obstaculo, unsigned posicion)
+{
+	if (!tp || (jugador != JUGADOR_1 && jugador != JUGADOR_2)) {
+		return 0;
+	}
+
+	lista_t *pista_actual;
+	if (jugador == JUGADOR_1) {
+		if (!tp->pista_1) {
+			tp->pista_1 = lista_crear();
+			if (!tp->pista_1) {
+				return 0;
+			}
+		}
+		pista_actual = tp->pista_1;
+	} else {
+		if (!tp->pista_2) {
+			tp->pista_2 = lista_crear();
+			if (!tp->pista_2) {
+				printf("pista 2 null\n");
+				return 0;
+			}
+		}
+		pista_actual = tp->pista_2;
+	}
+
+	unsigned tamanio_pista = (unsigned)lista_tamanio(pista_actual);
+	if (posicion > tamanio_pista)
+		posicion = tamanio_pista;
+
+	enum TP_OBSTACULO *nuevo_obstaculo = malloc(sizeof(enum TP_OBSTACULO));
+	if (!nuevo_obstaculo)
+		return 0;
+
+	*nuevo_obstaculo = obstaculo;
+
+	if (posicion == tamanio_pista) {
+		if (!lista_insertar(pista_actual, nuevo_obstaculo)) {
+			free(nuevo_obstaculo);
+			return 0;
+		}
+	} else {
+		if (!lista_insertar_en_posicion(pista_actual, nuevo_obstaculo,
+						posicion)) {
+			free(nuevo_obstaculo);
+			return 0;
+		}
+	}
+	printf("obstaculo agregado: %d , posicion: %d\n", *nuevo_obstaculo,
+	       posicion);
+	return (unsigned)lista_tamanio(pista_actual);
+}
+
+unsigned tp_quitar_obstaculo(TP *tp, enum TP_JUGADOR jugador, unsigned posicion)
+{
+	if (!tp)
+		return 0;
+
+	lista_t *pista_actual;
+	if (jugador == JUGADOR_1) {
+		if (!tp->pista_1) {
+			return 0;
+		}
+		pista_actual = tp->pista_1;
+	} else {
+		if (!tp->pista_2) {
+			return 0;
+		}
+		pista_actual = tp->pista_2;
+	}
+	enum TP_OBSTACULO *obst =
+		lista_quitar_de_posicion(pista_actual, posicion);
+	if (obst == NULL)
+		return 0;
+	free(obst);
+	obst = NULL;
+	return (unsigned)lista_tamanio(pista_actual);
+}
+
+typedef struct {
+	char *obstaculos_pista;
+	size_t posicion;
+} obstaculos_pista_aux_t;
+
+bool agregar_obstaculo_a_string(void *obstaculo, void *aux)
+{
+	if (!obstaculo || !aux) {
+		return false;
+	}
+	obstaculos_pista_aux_t *aux_data = (obstaculos_pista_aux_t *)aux;
+	enum TP_OBSTACULO *obstaculo_actual = (enum TP_OBSTACULO *)obstaculo;
+	if (!obstaculo_actual || !aux_data) {
+		return false;
+	}
+	switch (*obstaculo_actual) {
+	case OBSTACULO_FUERZA:
+		aux_data->obstaculos_pista[aux_data->posicion++] =
+			IDENTIFICADOR_OBSTACULO_FUERZA;
+		break;
+	case OBSTACULO_DESTREZA:
+		aux_data->obstaculos_pista[aux_data->posicion++] =
+			IDENTIFICADOR_OBSTACULO_DESTREZA;
+		break;
+	case OBSTACULO_INTELIGENCIA:
+		aux_data->obstaculos_pista[aux_data->posicion++] =
+			IDENTIFICADOR_OBSTACULO_INTELIGENCIA;
+		break;
+	default:
+		return false;
+	}
+	return true;
+}
+
+char *tp_obstaculos_pista(TP *tp, enum TP_JUGADOR jugador)
 {
 	if (!tp || (jugador != JUGADOR_1 && jugador != JUGADOR_2)) {
 		return NULL;
 	}
 
-	struct jugador *jugador_seleccionado =
-		asignar_jugador(tp, jugador_seleccionado, jugador);
-	if (!jugador_seleccionado->pokemon) {
-		return NULL;
-	}
-
-	return jugador_seleccionado->pokemon;
-}
-
-unsigned tp_agregar_obstaculo(const struct TP *tp, enum TP_JUGADOR jugador,
-			      enum TP_OBSTACULO obstaculo, unsigned posicion)
-{
-	if (!tp || (jugador != JUGADOR_1 && jugador != JUGADOR_2))
-		return 0;
-
-	struct jugador *jugador_actual =
-		asignar_jugador(tp, jugador_actual, jugador);
-
-	if (!jugador_actual->pista) {
-		jugador_actual->pista = lista_crear();
-		if (!jugador_actual->pista)
-			return 0;
-	}
-
-	unsigned total_obstaculos =
-		(unsigned)lista_tamanio(jugador_actual->pista);
-
-	if (posicion >= total_obstaculos) {
-		lista_insertar(jugador_actual->pista, (void *)obstaculo);
+	lista_t *pista_actual;
+	if (jugador == JUGADOR_1) {
+		if (!tp->pista_1) {
+			return NULL;
+		}
+		pista_actual = tp->pista_1;
 	} else {
-		lista_insertar_en_posicion(jugador_actual->pista,
-					   (void *)obstaculo, posicion);
+		if (!tp->pista_2 || lista_vacia(tp->pista_2)) {
+			return NULL;
+		}
+		pista_actual = tp->pista_2;
 	}
 
-	return (unsigned)lista_tamanio(jugador_actual->pista);
-}
-
-unsigned tp_quitar_obstaculo(const struct TP *tp, enum TP_JUGADOR jugador,
-			     unsigned posicion)
-{
-	if (!tp || (jugador != JUGADOR_1 && jugador != JUGADOR_2))
-		return 0;
-
-	struct jugador *jugador_actual =
-		asignar_jugador(tp, jugador_actual, jugador);
-
-	if (!jugador_actual->pista || lista_vacia(jugador_actual->pista))
-		return 0;
-
-	if (posicion >= lista_tamanio(jugador_actual->pista))
-		return 0;
-
-	lista_quitar_de_posicion(jugador_actual->pista, posicion);
-
-	return (unsigned)lista_tamanio(jugador_actual->pista);
-}
-
-char *tp_obstaculos_pista(const struct TP *tp, enum TP_JUGADOR jugador)
-{
-	if (!tp || (jugador != JUGADOR_1 && jugador != JUGADOR_2))
+	char *obstaculos_pista = malloc(lista_tamanio(pista_actual) + 1);
+	if (!obstaculos_pista) {
 		return NULL;
-
-	struct jugador *jugador_actual =
-		asignar_jugador(tp, jugador_actual, jugador);
-
-	if (!jugador_actual->pista || lista_vacia(jugador_actual->pista))
-		return NULL;
-
-	size_t tamanio_pista = lista_tamanio(jugador_actual->pista);
-	char *obstaculos_pista = calloc(
-		tamanio_pista + 2,
-		sizeof(char)); // Agregamos 1 para el carácter nulo y 1 para un espacio adicional
-	if (!obstaculos_pista)
-		return NULL;
+	}
 
 	obstaculos_pista_aux_t aux = { .obstaculos_pista = obstaculos_pista,
 				       .posicion = 0 };
+	lista_con_cada_elemento(pista_actual, agregar_obstaculo_a_string, &aux);
+	obstaculos_pista[aux.posicion] = '\0';
 
-	lista_con_cada_elemento(jugador_actual->pista,
-				agregar_obstaculo_a_string, &aux);
-	obstaculos_pista[tamanio_pista] = '\0';
 	return obstaculos_pista;
 }
-
-void tp_limpiar_pista(const struct TP *tp, enum TP_JUGADOR jugador)
+void destruir_obstaculo(void *obstaculo)
 {
-	if (!tp || (jugador != JUGADOR_1 && jugador != JUGADOR_2))
+	if (obstaculo != NULL) {
+		free(obstaculo);
+		obstaculo = NULL;
+	}
+}
+
+void tp_limpiar_pista(TP *tp, enum TP_JUGADOR jugador)
+{
+	if (!tp)
 		return;
 
-	struct jugador *jugador_actual =
-		asignar_jugador(tp, jugador_actual, jugador);
+	lista_t *pista_actual = NULL;
 
-	if (jugador_actual->pista) {
-		lista_destruir(jugador_actual->pista);
-		jugador_actual->pista = NULL;
+	if (jugador == JUGADOR_1) {
+		pista_actual = tp->pista_1;
+		tp->pista_1 = NULL; // Prevent accidental reuse
+	} else {
+		pista_actual = tp->pista_2;
+		tp->pista_2 = NULL; // Prevent accidental reuse
+	}
+
+	if (pista_actual) {
+		lista_destruir_todo(pista_actual, destruir_obstaculo);
+		pista_actual = NULL; // Ensure it's not used after freeing
 	}
 }
 
-unsigned tp_calcular_tiempo_pista(const struct TP *tp, enum TP_JUGADOR jugador)
+unsigned tp_calcular_tiempo_pista(TP *tp, enum TP_JUGADOR jugador)
 {
 	if (!tp || (jugador != JUGADOR_1 && jugador != JUGADOR_2))
 		return 0;
-	struct jugador *jugador_actual =
-		asignar_jugador(tp, jugador_actual, jugador);
-	if (!jugador_actual->pokemon || !jugador_actual->pista ||
-	    lista_vacia(jugador_actual->pista))
+
+	struct pokemon_info *pokemon;
+	lista_t *pista;
+
+	if (jugador == JUGADOR_1) {
+		pokemon = tp->pokemon_1;
+		pista = tp->pista_1;
+	} else {
+		pokemon = tp->pokemon_2;
+		pista = tp->pista_2;
+	}
+
+	if (!pokemon || !pista) {
 		return 0;
-	unsigned tiempo = 0;
-	lista_iterador_t *iterador =
-		lista_iterador_crear(jugador_actual->pista);
-	if (!iterador)
+	}
+
+	unsigned tiempo_final = 0;
+	int tipo_obstaculo_previo = -1;
+	int count = 0;
+
+	size_t n_obstaculos = lista_tamanio(pista);
+	if (n_obstaculos == 0) {
 		return 0;
-	while (lista_iterador_tiene_siguiente(iterador)) {
-		enum TP_OBSTACULO obstaculo =
-			(enum TP_OBSTACULO)lista_iterador_elemento_actual(
-				iterador);
-		switch (obstaculo) {
-		case OBSTACULO_FUERZA:
-			tiempo += (unsigned)abs(
-				(int)(10 - jugador_actual->pokemon->fuerza));
-			break;
-		case OBSTACULO_DESTREZA:
-			tiempo += (unsigned)abs(
-				(int)(10 - jugador_actual->pokemon->destreza));
-			break;
-		case OBSTACULO_INTELIGENCIA:
-			tiempo += (unsigned)abs(
-				(int)(10 -
-				      jugador_actual->pokemon->inteligencia));
-			break;
-		default:
-			lista_iterador_destruir(iterador);
+	}
+
+	for (size_t i = 0; i < n_obstaculos; i++) {
+		int *obstacle_t = (int *)lista_elemento_en_posicion(pista, i);
+		if (!obstacle_t) {
 			return 0;
 		}
-		lista_iterador_avanzar(iterador);
-	}
-	lista_iterador_destruir(iterador);
+		int obstacle_type = *obstacle_t;
 
-	return tiempo;
+		int attribute_value;
+		switch (obstacle_type) {
+		case OBSTACULO_FUERZA:
+			attribute_value = pokemon->fuerza;
+			break;
+		case OBSTACULO_DESTREZA:
+			attribute_value = pokemon->destreza;
+			break;
+		case OBSTACULO_INTELIGENCIA:
+			attribute_value = pokemon->inteligencia;
+			break;
+		default:
+			continue;
+		}
+
+		int base_time = (10 - attribute_value);
+		if (obstacle_type == tipo_obstaculo_previo) {
+			base_time = (10 - count - attribute_value);
+			count++;
+		} else {
+			count = 1;
+		}
+
+		int obstacle_time = base_time < 0 ? 0 : base_time;
+
+		tiempo_final += (unsigned)obstacle_time;
+
+		tipo_obstaculo_previo = obstacle_type;
+	}
+
+	return tiempo_final;
 }
 
-char *tp_tiempo_por_obstaculo(const struct TP *tp, enum TP_JUGADOR jugador)
+char *tp_tiempo_por_obstaculo(TP *tp, enum TP_JUGADOR jugador)
 {
 	if (!tp || (jugador != JUGADOR_1 && jugador != JUGADOR_2))
 		return NULL;
 
-	struct jugador *jug = asignar_jugador(tp, jug, jugador);
+	struct pokemon_info *pokemon;
+	lista_t *pista;
+	if (jugador == JUGADOR_1) {
+		pokemon = tp->pokemon_1;
+		pista = tp->pista_1;
+	} else {
+		pokemon = tp->pokemon_2;
+		pista = tp->pista_2;
+	}
 
-	if (!jug || !jug->pokemon || !jug->pista ||
-	    lista_vacia(jug->pista) == true)
-		return NULL;
-
-	size_t num_obstaculos = lista_tamanio(jug->pista);
+	size_t num_obstaculos = lista_tamanio(pista);
 	if (num_obstaculos == 0)
 		return NULL;
 
@@ -552,35 +588,51 @@ char *tp_tiempo_por_obstaculo(const struct TP *tp, enum TP_JUGADOR jugador)
 		return NULL;
 	csv_tiempo[0] = '\0';
 
-	lista_iterador_t *iterador = lista_iterador_crear(jug->pista);
+	int previous_obstacle_type = -1;
+	int consecutive_count = 0;
+
+	lista_iterador_t *iterador = lista_iterador_crear(pista);
 	if (!iterador) {
 		free(csv_tiempo);
 		return NULL;
 	}
+
 	int i = 0;
 	while (lista_iterador_tiene_siguiente(iterador)) {
 		i++;
-		enum TP_OBSTACULO obstaculo =
-			(enum TP_OBSTACULO)lista_iterador_elemento_actual(
+		enum TP_OBSTACULO *obstaculo =
+			(enum TP_OBSTACULO *)lista_iterador_elemento_actual(
 				iterador);
-		int tiempo = 0;
-		switch ((enum TP_OBSTACULO)obstaculo) {
+		printf("obstaculo: %d\n", *obstaculo);
+		int attribute_value;
+		switch (*obstaculo) {
 		case OBSTACULO_FUERZA:
-			tiempo += abs((int)(10 - jug->pokemon->fuerza));
+			attribute_value = pokemon->fuerza;
 			break;
 		case OBSTACULO_DESTREZA:
-			tiempo += abs((int)(10 - jug->pokemon->destreza));
+			attribute_value = pokemon->destreza;
 			break;
 		case OBSTACULO_INTELIGENCIA:
-			tiempo += abs((int)(10 - jug->pokemon->inteligencia));
+			attribute_value = pokemon->inteligencia;
 			break;
 		default:
 			lista_iterador_destruir(iterador);
 			free(csv_tiempo);
 			return NULL;
 		}
+
+		int base_time = (10 - attribute_value);
+		if (*obstaculo == previous_obstacle_type) {
+			base_time = (10 - consecutive_count - attribute_value);
+			consecutive_count++;
+		} else {
+			consecutive_count = 1;
+		}
+
+		int obstacle_time = base_time < 0 ? 0 : base_time;
+
 		char str_tiempo[11];
-		sprintf(str_tiempo, "%d", tiempo);
+		sprintf(str_tiempo, "%d", obstacle_time);
 		if (i > 1) {
 			strcat(csv_tiempo, ",");
 		}
@@ -588,21 +640,42 @@ char *tp_tiempo_por_obstaculo(const struct TP *tp, enum TP_JUGADOR jugador)
 		strcat(csv_tiempo, str_tiempo);
 
 		lista_iterador_avanzar(iterador);
+
+		previous_obstacle_type = *obstaculo;
 	}
 
 	lista_iterador_destruir(iterador);
-
 	return csv_tiempo;
 }
-
-void tp_destruir(struct TP *tp)
+bool liberar(const char *clave, void *valor, void *aux)
 {
-	if (!tp)
-		return;
+	struct pokemon_info *pokemon = (struct pokemon_info *)valor;
+	if (pokemon != NULL) {
+		if (pokemon->nombre != NULL) {
+			free(pokemon->nombre);
+		}
+		free(pokemon);
+	}
 
-	hash_con_cada_clave(tp->hash_pokemones, liberar, NULL);
-	hash_destruir(tp->hash_pokemones);
-	liberar_jugador(tp->jugador1);
-	liberar_jugador(tp->jugador2);
-	free(tp);
+	pokemon = NULL;
+	return true;
+}
+
+void tp_destruir(TP *tp)
+{
+	if (tp != NULL) {
+		if (tp->hash_pokemones) {
+			hash_con_cada_clave(tp->hash_pokemones, liberar, NULL);
+			hash_destruir(tp->hash_pokemones);
+		}
+		if (tp->pokemon_1) {
+			tp->pokemon_1 = NULL;
+		}
+		if (tp->pokemon_2) {
+			tp->pokemon_2 = NULL;
+		}
+		tp_limpiar_pista(tp, JUGADOR_1);
+		tp_limpiar_pista(tp, JUGADOR_2);
+		free(tp);
+	}
 }

@@ -38,7 +38,7 @@ El tiempo que tarda cada Pokemon en superar un obstáculo depende de 2 cosas:
 - El tipo de obstáculo y el valor del atributo correspondiente del pokemon. La formula utilizada es |10-atributo|
   - Por ejemplo para un pokemon de fuerza 5 y un obstáculo de tipo **FUERZA**, el tiempo que se tarda es |10-5|=5 unidades de tiempo.
 - El tipo del obstáculo anterior
-  - Si el obstáculo anterior es del mismo tipo, se utiliza 10-**n** de valor base en vez de 10 (donde **n** es la cantidad de obstáculos anteriores seguidos del mismo tipo)
+  - Si el obstáculo anterior es del mismo tipo se utiliza 10-**n** de valor base en vez de 10 (donde **n** es la cantidad de obstáculos anteriores seguidos del mismo tipo)
   - En el caso del pokemon anterior, para 2 obstáculos seguidos de fuerza, tarda 5 unidades para el primero pero |10-1-5|=4 para el segundo
   - Si hubiese un tercero, el tiempo sería |10-2-5|=3
 
