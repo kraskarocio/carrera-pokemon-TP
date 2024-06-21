@@ -12,4 +12,4 @@
 */
 void quicksort_alfabetico(char **elementos, size_t cant);
 
-#endif
+#endif // QUICKSORT_H

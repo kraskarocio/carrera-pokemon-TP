@@ -7,14 +7,14 @@
 
 void tp_crear_pruebas_archivo_NULL_devuelve_NULL()
 {
-	struct TP *tp = tp_crear(NULL);
+	TP *tp = tp_crear(NULL);
 	pa2m_afirmar(tp == NULL, "TP creado sin archivo es NULL");
 }
 
 void tp_crear_pruebas()
 {
 	const char *nombre_del_archivo = "ejemplo/pokemones.txt";
-	struct TP *tp = tp_crear(nombre_del_archivo);
+	TP *tp = tp_crear(nombre_del_archivo);
 	pa2m_afirmar(
 		tp_cantidad_pokemon(tp) == 25,
 		"La cantidad de pokemones coincide con la cantidad de lineas del archivo");
@@ -23,7 +23,7 @@ void tp_crear_pruebas()
 void tp_bucar_un_nombre_de_pokemon_que_no_esta_devuelve_NULL()
 {
 	const char *nombre_del_archivo = "ejemplo/pokemones.txt";
-	struct TP *tp = tp_crear(nombre_del_archivo);
+	TP *tp = tp_crear(nombre_del_archivo);
 	pa2m_afirmar(tp_buscar_pokemon(tp, NULL) == NULL,
 		     "Si no se ingresa el nombre de un pokemon devuelve NULL.");
 	const char *abc = "abc";
@@ -36,7 +36,7 @@ void tp_bucar_un_nombre_de_pokemon_que_no_esta_devuelve_NULL()
 void tp_buscar_busco_pokemones()
 {
 	const char *nombre_del_archivo = "ejemplo/pokemones.txt";
-	struct TP *tp = tp_crear(nombre_del_archivo);
+	TP *tp = tp_crear(nombre_del_archivo);
 	const char *poke1_name = "Pikachu";
 	const struct pokemon_info *poke1 = tp_buscar_pokemon(tp, poke1_name);
 	pa2m_afirmar(poke1 != NULL,
@@ -63,7 +63,7 @@ void tp_buscar_busco_pokemones()
 void tp_buscar_con_otro_archivo_con_todos_los_pokemones()
 {
 	const char *nombre_del_archivo = "ejemplo/menos_pokemones.txt";
-	struct TP *tp = tp_crear(nombre_del_archivo);
+	TP *tp = tp_crear(nombre_del_archivo);
 	const char *poke1_name = "ivysaur";
 	const char *poke2_name = "Blastoise";
 	const char *poke3_name = "wartortle";
@@ -97,7 +97,7 @@ void tp_buscar_con_otro_archivo_con_todos_los_pokemones()
 void tp_nombres_disponibles_pruebas_archivo_mas_chico()
 {
 	const char *nombre_del_archivo = "ejemplo/menos_pokemones.txt";
-	struct TP *tp = tp_crear(nombre_del_archivo);
+	TP *tp = tp_crear(nombre_del_archivo);
 	char *nombres = tp_nombres_disponibles(tp);
 	pa2m_afirmar(strcmp(nombres, "Blastoise,Ivysaur,Raichu,Wartortle") == 0,
 		     "Nombres correctos, archivo chico.");
@@ -107,7 +107,7 @@ void tp_nombres_disponibles_pruebas_archivo_mas_chico()
 void tp_nombres_disponibles_pruebas_archivo_grande()
 {
 	const char *nombre_del_archivo = "ejemplo/pokemones.txt";
-	struct TP *tp = tp_crear(nombre_del_archivo);
+	TP *tp = tp_crear(nombre_del_archivo);
 	char *nombres = tp_nombres_disponibles(tp);
 	pa2m_afirmar(
 		strcmp(nombres,
@@ -120,7 +120,7 @@ void tp_nombres_disponibles_pruebas_archivo_grande()
 void tp_nombres_disponibles_si_jugador_ya_tiene_seleccionado()
 {
 	const char *nombre_del_archivo = "ejemplo/pokemones.txt";
-	struct TP *tp = tp_crear(nombre_del_archivo);
+	TP *tp = tp_crear(nombre_del_archivo);
 	bool resta = tp_seleccionar_pokemon(tp, JUGADOR_1, "Pikachu");
 	if (resta == false) {
 		printf("No se pudo seleccionar el pokemon\n");
@@ -137,7 +137,7 @@ void tp_nombres_disponibles_si_jugador_ya_tiene_seleccionado()
 }
 void tp_seleccionar_pokemon_devuelve_correcto()
 {
-	struct TP *tp = tp_crear("ejemplo/pokemones.txt");
+	TP *tp = tp_crear("ejemplo/pokemones.txt");
 	pa2m_afirmar(tp_seleccionar_pokemon(tp, JUGADOR_1, "Pikachu") == true,
 		     "Se selecciono correctamente el pokemon");
 	pa2m_afirmar(tp_seleccionar_pokemon(tp, JUGADOR_2, "Pikachu") == false,
@@ -173,7 +173,7 @@ void tp_seleccionar_pokemon_devuelve_correcto()
 }
 void tp_agregar_obstaculo_pruebas()
 {
-	struct TP *tp = tp_crear("ejemplo/pokemones.txt");
+	TP *tp = tp_crear("ejemplo/pokemones.txt");
 	pa2m_afirmar(tp_agregar_obstaculo(tp, JUGADOR_1, OBSTACULO_FUERZA, 0) ==
 			     1,
 		     "Se agrego correctamente el OBSTACULO_FUERZA");
@@ -196,14 +196,14 @@ void tp_agregar_obstaculo_pruebas()
 }
 void tp_quitar_obstaculos_cuando_no_hay_obstaculos()
 {
-	struct TP *tp = tp_crear("ejemplo/pokemones.txt");
+	TP *tp = tp_crear("ejemplo/pokemones.txt");
 	pa2m_afirmar(tp_quitar_obstaculo(tp, JUGADOR_1, 0) == 0,
 		     "No hay obstaculos");
 	tp_destruir(tp);
 }
 void tp_quitar_obstaculos_pruebas()
 {
-	struct TP *tp = tp_crear("ejemplo/pokemones.txt");
+	TP *tp = tp_crear("ejemplo/pokemones.txt");
 	pa2m_afirmar(tp_agregar_obstaculo(tp, JUGADOR_1, OBSTACULO_FUERZA, 0) ==
 			     1,
 		     "Se agrego correctamente el OBSTACULO_FUERZA");
@@ -238,7 +238,7 @@ void tp_quitar_obstaculos_pruebas()
 }
 void tp_quitar_obstaculos_pruebas_mezcladas()
 {
-	struct TP *tp = tp_crear("ejemplo/pokemones.txt");
+	TP *tp = tp_crear("ejemplo/pokemones.txt");
 	pa2m_afirmar(tp_agregar_obstaculo(tp, JUGADOR_1, OBSTACULO_FUERZA, 0) ==
 			     1,
 		     "Se agrego correctamente el OBSTACULO_FUERZA");
@@ -273,7 +273,7 @@ void tp_quitar_obstaculos_pruebas_mezcladas()
 }
 void tp_obstaculo_pista_pruebas_pista_chica()
 {
-	struct TP *tp = tp_crear("ejemplo/pokemones.txt");
+	TP *tp = tp_crear("ejemplo/pokemones.txt");
 	pa2m_afirmar(tp_agregar_obstaculo(tp, JUGADOR_1, OBSTACULO_FUERZA, 0) ==
 			     1,
 		     "Se agrego correctamente el OBSTACULO_FUERZA");
@@ -299,7 +299,7 @@ void tp_obstaculo_pista_pruebas_pista_chica()
 }
 void tp_obstaculo_pista_pruebas_pista_grande()
 {
-	struct TP *tp = tp_crear("ejemplo/pokemones.txt");
+	TP *tp = tp_crear("ejemplo/pokemones.txt");
 	pa2m_afirmar(tp_agregar_obstaculo(tp, JUGADOR_1, OBSTACULO_FUERZA, 0) ==
 			     1,
 		     "Se agrego correctamente el OBSTACULO_FUERZA");
@@ -346,7 +346,7 @@ void tp_obstaculo_pista_pruebas_pista_grande()
 
 void tp_obstaculo_pista_pruebas_pista_mixta()
 {
-	struct TP *tp = tp_crear("ejemplo/pokemones.txt");
+	TP *tp = tp_crear("ejemplo/pokemones.txt");
 	pa2m_afirmar(tp_agregar_obstaculo(tp, JUGADOR_1, OBSTACULO_FUERZA, 0) ==
 			     1,
 		     "Se agrego correctamente el OBSTACULO_FUERZA");
@@ -364,7 +364,7 @@ void tp_obstaculo_pista_pruebas_pista_mixta()
 }
 void tp_limpiar_pista_pruebas()
 {
-	struct TP *tp = tp_crear("ejemplo/pokemones.txt");
+	TP *tp = tp_crear("ejemplo/pokemones.txt");
 	pa2m_afirmar(tp_agregar_obstaculo(tp, JUGADOR_1, OBSTACULO_FUERZA, 0) ==
 			     1,
 		     "Se agrego correctamente el OBSTACULO_FUERZA");
@@ -396,7 +396,7 @@ void tp_limpiar_pista_pruebas()
 }
 void tp_calcular_tiempo_pista_pruebas()
 {
-	struct TP *tp = tp_crear("ejemplo/pokemones.txt");
+	TP *tp = tp_crear("ejemplo/pokemones.txt");
 	pa2m_afirmar(tp_agregar_obstaculo(tp, JUGADOR_1, OBSTACULO_FUERZA, 0) ==
 			     1,
 		     "Se agrego correctamente el OBSTACULO_FUERZA");
@@ -414,7 +414,7 @@ void tp_calcular_tiempo_pista_pruebas()
 }
 void tp_tiempo_por_obstaculo_pruebas()
 {
-	struct TP *tp = tp_crear("ejemplo/pokemones.txt");
+	TP *tp = tp_crear("ejemplo/pokemones.txt");
 	pa2m_afirmar(tp_agregar_obstaculo(tp, JUGADOR_1, OBSTACULO_FUERZA, 0) ==
 			     1,
 		     "Se agrego correctamente el OBSTACULO_FUERZA");
