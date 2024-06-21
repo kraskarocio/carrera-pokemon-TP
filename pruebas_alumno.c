@@ -18,8 +18,6 @@ void tp_crear_pruebas()
 	pa2m_afirmar(
 		tp_cantidad_pokemon(tp) == 25,
 		"La cantidad de pokemones coincide con la cantidad de lineas del archivo");
-	tp_limpiar_pista(tp, JUGADOR_1);
-	tp_limpiar_pista(tp, JUGADOR_2);
 	tp_destruir(tp);
 }
 void tp_bucar_un_nombre_de_pokemon_que_no_esta_devuelve_NULL()
@@ -32,8 +30,7 @@ void tp_bucar_un_nombre_de_pokemon_que_no_esta_devuelve_NULL()
 	pa2m_afirmar(
 		tp_buscar_pokemon(tp, abc) == NULL,
 		"Si el nombre no pertenece a ninguno de los pokemones, devuelve NULL.");
-	tp_limpiar_pista(tp, JUGADOR_1);
-	tp_limpiar_pista(tp, JUGADOR_2);
+
 	tp_destruir(tp);
 }
 
@@ -62,8 +59,6 @@ void tp_buscar_busco_pokemones()
 	pa2m_afirmar(poke3->fuerza == 9, "Atributo correcto");
 	pa2m_afirmar(poke3->destreza == 10, "Atributo correcto");
 	pa2m_afirmar(poke3->inteligencia == 8, "Atributo correcto");
-	tp_limpiar_pista(tp, JUGADOR_1);
-	tp_limpiar_pista(tp, JUGADOR_2);
 	tp_destruir(tp);
 }
 void tp_buscar_con_otro_archivo_con_todos_los_pokemones()
@@ -99,8 +94,6 @@ void tp_buscar_con_otro_archivo_con_todos_los_pokemones()
 	pa2m_afirmar(poke4->destreza == 8, "Pokemon 4. Atributo correcto");
 	pa2m_afirmar(poke4->inteligencia == 7, "Pokemon 4. Atributo correcto");
 
-	tp_limpiar_pista(tp, JUGADOR_1);
-	tp_limpiar_pista(tp, JUGADOR_2);
 	tp_destruir(tp);
 }
 void tp_nombres_disponibles_pruebas_archivo_mas_chico()
@@ -111,8 +104,7 @@ void tp_nombres_disponibles_pruebas_archivo_mas_chico()
 	pa2m_afirmar(strcmp(nombres, "Blastoise,Ivysaur,Raichu,Wartortle") == 0,
 		     "Nombres correctos, archivo chico.");
 	free(nombres);
-	tp_limpiar_pista(tp, JUGADOR_1);
-	tp_limpiar_pista(tp, JUGADOR_2);
+
 	tp_destruir(tp);
 }
 void tp_nombres_disponibles_pruebas_archivo_grande()
@@ -126,8 +118,7 @@ void tp_nombres_disponibles_pruebas_archivo_grande()
 			0,
 		"Nombres correctos, archivo grande.");
 	free(nombres);
-	tp_limpiar_pista(tp, JUGADOR_1);
-	tp_limpiar_pista(tp, JUGADOR_2);
+
 	tp_destruir(tp);
 }
 void tp_nombres_disponibles_si_jugador_ya_tiene_seleccionado()
@@ -146,8 +137,7 @@ void tp_nombres_disponibles_si_jugador_ya_tiene_seleccionado()
 			0,
 		"Nombres correctos, archivo grande.");
 	free(nombres);
-	tp_limpiar_pista(tp, JUGADOR_1);
-	tp_limpiar_pista(tp, JUGADOR_2);
+
 	tp_destruir(tp);
 }
 void tp_calcular_tiempo_pista_pruebas()
@@ -166,8 +156,7 @@ void tp_calcular_tiempo_pista_pruebas()
 		     "Se selecciono correctamente el pokemon");
 	pa2m_afirmar(tp_calcular_tiempo_pista(tp, JUGADOR_1) == 3,
 		     "Tiempo correcto");
-	tp_limpiar_pista(tp, JUGADOR_1);
-	tp_limpiar_pista(tp, JUGADOR_2);
+
 	tp_destruir(tp);
 }
 void tp_seleccionar_pokemon_devuelve_correcto()
@@ -204,8 +193,7 @@ void tp_seleccionar_pokemon_devuelve_correcto()
 		     "Pokemon del jugador 2. Atributo correcto");
 	pa2m_afirmar(poke2->inteligencia == 9,
 		     "Pokemon del jugador 2. Atributo correcto");
-	tp_limpiar_pista(tp, JUGADOR_1);
-	tp_limpiar_pista(tp, JUGADOR_2);
+
 	tp_destruir(tp);
 }
 
@@ -214,8 +202,6 @@ void tp_quitar_obstaculos_cuando_no_hay_obstaculos()
 	TP *tp = tp_crear("ejemplo/pokemones.txt");
 	pa2m_afirmar(tp_quitar_obstaculo(tp, JUGADOR_1, 0) == 0,
 		     "No hay obstaculos");
-	tp_limpiar_pista(tp, JUGADOR_1);
-	tp_limpiar_pista(tp, JUGADOR_2);
 	tp_destruir(tp);
 }
 void tp_quitar_obstaculos_pruebas()
@@ -251,8 +237,7 @@ void tp_quitar_obstaculos_pruebas()
 		     "Se quito correctamente");
 	pa2m_afirmar(tp_quitar_obstaculo(tp, JUGADOR_1, 0) == 0,
 		     "Se quito correctamente");
-	tp_limpiar_pista(tp, JUGADOR_1);
-	tp_limpiar_pista(tp, JUGADOR_2);
+
 	tp_destruir(tp);
 }
 void tp_agregar_obstaculo_pruebas()
@@ -276,8 +261,7 @@ void tp_agregar_obstaculo_pruebas()
 	pa2m_afirmar(tp_agregar_obstaculo(tp, JUGADOR_1, OBSTACULO_DESTREZA,
 					  1) == 6,
 		     "Se agrego correctamente el OBSTACULO_DESTREZA");
-	tp_limpiar_pista(tp, JUGADOR_2);
-	tp_limpiar_pista(tp, JUGADOR_1);
+
 	tp_destruir(tp);
 }
 void tp_quitar_obstaculos_pruebas_mezcladas()
@@ -313,8 +297,7 @@ void tp_quitar_obstaculos_pruebas_mezcladas()
 		     "Se quito correctamente");
 	pa2m_afirmar(tp_quitar_obstaculo(tp, JUGADOR_1, 0) == 0,
 		     "Se quito correctamente");
-	tp_limpiar_pista(tp, JUGADOR_2);
-	tp_limpiar_pista(tp, JUGADOR_1);
+
 	tp_destruir(tp);
 }
 
@@ -342,8 +325,7 @@ void tp_obstaculo_pista_pruebas_pista_chica()
 
 	pa2m_afirmar(strcmp(pista, pista_correcta) == 0, "Pista correcta");
 	free(pista);
-	tp_limpiar_pista(tp, JUGADOR_2);
-	tp_limpiar_pista(tp, JUGADOR_1);
+
 	tp_destruir(tp);
 }
 void tp_obstaculo_pista_pruebas_pista_grande()
@@ -390,11 +372,35 @@ void tp_obstaculo_pista_pruebas_pista_grande()
 				  '\0' };
 	pa2m_afirmar(strcmp(pista, pista_correcta) == 0, "Pista correcta");
 	free(pista);
-	tp_limpiar_pista(tp, JUGADOR_2);
-	tp_limpiar_pista(tp, JUGADOR_1);
+
 	tp_destruir(tp);
 }
+void tp_obstaculo_pista_pruebas_pista_mixta_c()
+{
+	TP *tp = tp_crear("ejemplo/pokemones.txt");
+	tp_seleccionar_pokemon(tp, JUGADOR_1, "Caterpie");
+	tp_agregar_obstaculo(tp, JUGADOR_1, OBSTACULO_FUERZA, 0);
+	tp_agregar_obstaculo(tp, JUGADOR_1, OBSTACULO_FUERZA, 1);
+	tp_agregar_obstaculo(tp, JUGADOR_1, OBSTACULO_FUERZA, 2);
+	tp_agregar_obstaculo(tp, JUGADOR_1, OBSTACULO_DESTREZA, 3);
+	tp_agregar_obstaculo(tp, JUGADOR_1, OBSTACULO_DESTREZA, 4);
+	tp_agregar_obstaculo(tp, JUGADOR_1, OBSTACULO_DESTREZA, 5);
+	tp_agregar_obstaculo(tp, JUGADOR_1, OBSTACULO_DESTREZA, 6);
+	tp_agregar_obstaculo(tp, JUGADOR_1, OBSTACULO_DESTREZA, 7);
+	tp_agregar_obstaculo(tp, JUGADOR_1, OBSTACULO_DESTREZA, 8);
+	tp_agregar_obstaculo(tp, JUGADOR_1, OBSTACULO_DESTREZA, 9);
+	tp_agregar_obstaculo(tp, JUGADOR_1, OBSTACULO_DESTREZA, 10);
+	tp_agregar_obstaculo(tp, JUGADOR_1, OBSTACULO_INTELIGENCIA, 11);
+	tp_agregar_obstaculo(tp, JUGADOR_1, OBSTACULO_INTELIGENCIA, 12);
 
+	unsigned int tiempo = tp_calcular_tiempo_pista(tp, JUGADOR_1);
+	pa2m_afirmar(tiempo == 38, "TIEMPO IGUAL A 38");
+	char *rst = tp_tiempo_por_obstaculo(tp, JUGADOR_1);
+	pa2m_afirmar(strcmp(rst, "7,7,7,2,2,2,2,2,2,2,2,9,9") == 0,
+		     "Tiempo correcto");
+	free(rst);
+	tp_destruir(tp);
+}
 void tp_obstaculo_pista_pruebas_pista_mixta()
 {
 	TP *tp = tp_crear("ejemplo/pokemones.txt");
@@ -411,8 +417,7 @@ void tp_obstaculo_pista_pruebas_pista_mixta()
 	pa2m_afirmar(pista != NULL, "Pista no es NULL");
 	pa2m_afirmar(strcmp(pista, "DIF") == 0, "Pista correcta");
 	free(pista);
-	tp_limpiar_pista(tp, JUGADOR_2);
-	tp_limpiar_pista(tp, JUGADOR_1);
+
 	tp_destruir(tp);
 }
 
@@ -432,6 +437,7 @@ void tp_tiempo_por_obstaculo_pruebas()
 		     "Se selecciono correctamente el pokemon");
 	pa2m_afirmar(tp_calcular_tiempo_pista(tp, JUGADOR_1) == 3,
 		     "Tiempo correcto");
+
 	char *tiempo_por_obstaculo = tp_tiempo_por_obstaculo(tp, JUGADOR_1);
 
 	pa2m_afirmar(tiempo_por_obstaculo != NULL,
@@ -439,10 +445,10 @@ void tp_tiempo_por_obstaculo_pruebas()
 	pa2m_afirmar(strcmp(tiempo_por_obstaculo, "0,1,2") == 0,
 		     "Tiempo por obstaculo correcto");
 	free(tiempo_por_obstaculo);
-	tp_limpiar_pista(tp, JUGADOR_1);
-	tp_limpiar_pista(tp, JUGADOR_2);
+
 	tp_destruir(tp);
 }
+
 int main()
 {
 	pa2m_nuevo_grupo(
@@ -483,5 +489,6 @@ int main()
 	pa2m_nuevo_grupo(
 		"\n======================== TP_TIEMPO_POR_OBSTACULO ========================");
 	tp_tiempo_por_obstaculo_pruebas();
+	tp_obstaculo_pista_pruebas_pista_mixta_c();
 	return pa2m_mostrar_reporte();
 }
