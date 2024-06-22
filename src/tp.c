@@ -295,10 +295,10 @@ bool tp_seleccionar_pokemon(TP *tp, enum TP_JUGADOR jugador, const char *nombre)
 		return false;
 	}
 	if (*poke_jugador_actual != NULL) {
-		free(*poke_jugador_actual);
 		if ((*poke_jugador_actual)->nombre != NULL) {
 			free((*poke_jugador_actual)->nombre);
 		}
+		free(*poke_jugador_actual);
 	}
 	*poke_jugador_actual = pokemon;
 	free(c_aux);
