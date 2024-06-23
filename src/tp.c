@@ -370,8 +370,7 @@ unsigned tp_agregar_obstaculo(TP *tp, enum TP_JUGADOR jugador,
 			return 0;
 		}
 	}
-	printf("obstaculo agregado: %d , posicion: %d\n", *nuevo_obstaculo,
-	       posicion);
+
 	return (unsigned)lista_tamanio(pista_actual);
 }
 
