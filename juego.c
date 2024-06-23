@@ -4,7 +4,6 @@
 #include <stdbool.h>
 #include <time.h>
 #include <math.h>
-#include <unistd.h> 
 #include "src/tp.h"
 #include "src/ASCII.h"
 #include "src/ANSI-color-codes.h"
@@ -29,14 +28,6 @@ typedef struct {
 	int puntaje_para_poder_ganar;
 	char *pista_2;
 } juego_t;
-
-void crear_pista_al_azar(TP* tp, int i);
-void crear_pista(TP* tp, juego_t *juego, int i);
-char *obtener_al_azal(char **nombres, int count);
-void seleccionar_pokemon_al_azar(TP *tp);
-void tp_jugar_ronda(TP *tp, int ronda, juego_t *juego);
-void tp_jugar(TP *tp, juego_t *juego);
-
 
 void seleccionar_dificultad(juego_t *juego)
 {
@@ -149,7 +140,6 @@ void seleccionar_pokemon(TP *tp)
     while (i < cant_poke_counter) {
 
 	for (int i = 0; i < cant_poke_counter; i++) {
-		printf("\033[H\033[J");
 		const struct pokemon_info *poke = tp_buscar_pokemon(tp, nombres[i]);
 		if (poke == NULL) {
 			printf("Error: No se pudo obtener la información del pokemon.\n");
@@ -255,12 +245,16 @@ void tp_jugar_ronda(TP *tp, int ronda, juego_t *juego)
 	versus(poke1->nombre, poke2->nombre, poke1->fuerza, poke2->fuerza,
 	       poke1->destreza, poke2->destreza, poke1->inteligencia,
 	       poke2->inteligencia);
-	printf(HBLU"Tiene 2 segundos para mirar los pokemones seleccionados...\n"RESET);
-	sleep(2);
 	}
-
-/* 	free(poke1);
-	free(poke2); */
+	printf(HYEL"Ingrese 1 para continuar -> "RESET);
+	int opt;
+	if(scanf("%d", &opt) != 1)
+		return;
+	if (opt != 1)
+	{
+		return;
+	}
+	
 	if(ronda == 0){
 		for(int i = 0; i < juego->obstaculos; i++){
 			crear_pista(tp, juego , i);
@@ -280,10 +274,17 @@ void tp_jugar_ronda(TP *tp, int ronda, juego_t *juego)
 	}
 	char *pista1 = tp_obstaculos_pista(tp, JUGADOR_1);
 	pistas(juego->dificultad, pista1);
+
 	printf(HRED "				            <----- TU PISTA ----->\n" RESET);
-	printf(HBLU"			        Tienes 2 segundos para mirar la pista\n"RESET);
-	sleep(2);
+	printf(HYEL"Ingrese 1 para continuar -> "RESET);
+	if(scanf("%d", &opt) != 1)
+		return;
+	if (opt != 1)
+	{
+		return;
+	}
 	free(pista1);
+
 	if (ronda == 0)
 	{
 		char *pista2 = tp_obstaculos_pista(tp, JUGADOR_2);
@@ -316,8 +317,14 @@ void tp_jugar_ronda(TP *tp, int ronda, juego_t *juego)
 
 	pistas(juego->dificultad, juego->pista_2);
 	printf(HRED "					<----- PISTA DE TU CONTRINCANTE ----->\n" RESET);
-	printf(HBLU"					 Tienes 2 segundos para mirar la pista\n"RESET);
-	sleep(2);
+	printf(HYEL"Ingrese 1 para continuar -> "RESET);
+	if(scanf("%d", &opt) != 1)
+		return;
+	if (opt != 1)
+	{
+		return;
+	}
+	
 	unsigned tiempo1 = tp_calcular_tiempo_pista(tp, JUGADOR_1);
 	unsigned tiempo2 = tp_calcular_tiempo_pista(tp, JUGADOR_2);
 
@@ -330,12 +337,18 @@ void tp_jugar_ronda(TP *tp, int ronda, juego_t *juego)
 	printf("Puntaje: %.2f \n", puntaje);
 	if (puntaje >= juego->puntaje_para_poder_ganar) {
 		fin_de_la_partida(true, juego->rondas_por_jugar - ronda, puntaje, (int)tiempo1, (int)tiempo2);
-		sleep(2);
 	} else {
 		fin_de_la_partida(false, juego->rondas_por_jugar - ronda, puntaje, (int)tiempo1, (int)tiempo2);
-		sleep(2);
 	}
 	if (ronda == juego->rondas_por_jugar - 1) {
+		printf(HYEL"Ingrese 1 para continuar -> "RESET);
+		if(scanf("%d", &opt) != 1)
+			return;
+		if (opt != 1)
+		{
+			return;
+		}
+		
 		return;
 	}
 	printf(HYEL"Desea seguir jugando? (1) si (2) no ->"RESET);

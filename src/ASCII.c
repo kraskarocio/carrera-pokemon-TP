@@ -513,6 +513,7 @@ void imprimir_poke_tabla(int id, char *nombre, int fuerza, int inteligencia,
 }
 void salida()
 {
+	printf("\033[H\033[J");
 	printf(HCYN
 	       "Gracias por jugar a Carrera de Obstaculos Pokemon <3 \n" RESET);
 	printf(CYN "    ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣶⣿⣶⣦⣄⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣤⣶⣾⣿⣿⣷\n" RESET);
@@ -609,10 +610,9 @@ int reintentos_imposible, int porcentaje_imposible, int pista_imposible)
 	printf("            │  (1) Facil:                                              │\n");
 	printf("            │    - La pista tiene %d obstaculos.                        │\n",
 	       obs_facil);
-	printf("            │    - No podras ver %d obstaculos de tu contrincante.      │\n",
+	printf("            │    - No podras ver, máximo, %d 		               │\n",
 	       pista_facil);
-	printf("            │    - Tienes %d reintentos.                                │\n",
-	       reintentos_facil);
+		printf("            │      obstaculos de tu contrincante. Tienes %d reintentos. │ \n", reintentos_facil);
 	printf("            │    - Para ganar necesitás un porcentaje mayor a %d %%     │\n",
 	       porcentaje_facil);
 	printf("            └──────────────────────────────────────────────────────────┘\n" RESET);
@@ -621,10 +621,9 @@ int reintentos_imposible, int porcentaje_imposible, int pista_imposible)
 	printf("            │  (2) Normal:                                             │\n");
 	printf("            │    - La pista tiene %d obstaculos.                        │\n",
 	       obs_normal);
-	printf("            │    - No podras ver %d obstaculos de tu contrincante.      │\n",
+	printf("            │    - No podrás ver, máximo, %d                            │\n",
 	       pista_normal);
-	printf("            │    - Tienes %d reintentos                                 │\n",
-	       reintentos_normal);
+	printf("            │      obstaculos de tu contrincante. Tienes %d reintentos. │ \n", reintentos_normal);
 	printf("            │    - Para ganar necesitás un porcentaje mayor a %d %%     │\n",
 	       porcentaje_normal);
 	printf("            └──────────────────────────────────────────────────────────┘\n" RESET);
@@ -634,10 +633,9 @@ int reintentos_imposible, int porcentaje_imposible, int pista_imposible)
 	printf("            │  (3) Dificil                                             │\n");
 	printf("            │    - La pista tiene %d obstaculos.                        │\n",
 	       obs_dificil);
-	printf("            │    - No podras ver %d obstaculos de tu contrincante.      │\n",
+	printf("            │    - No podras ver, máximo, %d    			       │\n",
 	       pista_dificil);
-	printf("            │    - Tienes %d reintentos.                                │\n",
-	       reintentos_dificil);
+	printf("            │      obstaculos de tu contrincante. Tienes %d reintentos. │ \n", reintentos_dificil);
 	printf("            │    - Para ganar necesitás un porcentaje mayor a %d %%     │\n",
 	       porcentaje_dificil);
 	printf("            └──────────────────────────────────────────────────────────┘\n" RESET);
@@ -647,10 +645,9 @@ int reintentos_imposible, int porcentaje_imposible, int pista_imposible)
 	printf("            │  (4) Imposible                                           │\n");
 	printf("            │    - La pista tiene %d obstaculos.                        │\n",
 	       obs_imposible);
-	printf("            │    - No podras ver %d obstaculos de tu contrincante.      │\n",
+	printf("            │    - No podras ver, máximo, %d 	                       │\n",
 	       pista_imposible);
-	printf("            │    - Tienes %d reintentos                                 │\n",
-	       reintentos_imposible);
+	printf("            │      obstaculos de tu contrincante. Tienes %d reintentos. │ \n", reintentos_imposible);
 	printf("            │    - Para ganar necesitás un porcentaje mayor a %d %%     │\n",
 	       porcentaje_imposible);
 	printf("            └──────────────────────────────────────────────────────────┘\n" RESET);
@@ -757,28 +754,6 @@ void fin_de_la_partida(bool ganada, int cantidad_de_rondas_por_jugar,
 		printf("                      +---------------------------------------------------------------------------+ \n");
 	}
 }
-/* void puntajes_por_ronda(char *puntaje1, char *puntaje2, char *puntaje3)
-{
-	printf("                      +---------------------------------------------------------------------------+ \n");
-	printf("                      |                                                                           | \n");
-	printf("                      |                   ░█▀█░█░█░█▀█░▀█▀░█▀█░▀▀█░█▀▀░█▀▀                        | \n");
-	printf("                      |                   ░█▀▀░█░█░█░█░░█░░█▀█░░░█░█▀▀░▀▀█                        | \n");
-	printf("                      |                   ░▀░░░▀▀▀░▀░▀░░▀░░▀░▀░▀▀░░▀▀▀░▀▀▀                        | \n");
-	printf("                      |                                                                           | \n");
-	printf("                      |          +-------------------------------------------------+              | \n");
-	printf("                      |          |  1er ronda: %-6s                              |              | \n",
-	       puntaje1);
-	printf("                      |          |------------------------------------------------ |              | \n");
-	printf("                      |          |  2da ronda: %-6s                              |              | \n",
-	       puntaje2);
-	printf("                      |          |------------------------------------------------ |              | \n");
-	printf("                      |          |  3er ronda: %-6s                              |              | \n",
-	       puntaje3);
-	printf("                      |          +-------------------------------------------------+              | \n");
-	printf("                      |                                                                           | \n");
-	printf("                      +---------------------------------------------------------------------------+ \n");
-} */
-
 void imprimir_opciones_obstaculos(int posicion){
 		printf("\033[H\033[J");
 	printf("			┌─────────────────────────────────┐\n");
