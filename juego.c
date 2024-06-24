@@ -10,7 +10,6 @@
 #include "src/lista.h"
 #define RESET "\x1b[0m"
 
-
 #define FACIL 0
 #define NORMAL 1
 #define DIFICIL 2
@@ -31,7 +30,8 @@ typedef struct {
 
 void seleccionar_dificultad(juego_t *juego)
 {
-	imprimir_dificultades(3, 3, 50, 1, 5, 2, 60, 2, 7, 1, 70, 3, 8, 0, 80, 6);
+	imprimir_dificultades(3, 3, 50, 1, 5, 2, 60, 2, 7, 1, 70, 3, 8, 0, 80,
+			      6);
 	printf(HYEL "Ingrese una opción -> " RESET);
 	if (scanf("%d", &juego->dificultad) != 1)
 		return;
@@ -80,7 +80,7 @@ juego_t *juego_crear()
 
 void juego_destruir(juego_t *juego)
 {
-	if (juego->pista_2!= NULL)
+	if (juego->pista_2 != NULL)
 		free(juego->pista_2);
 	free(juego);
 }
@@ -121,94 +121,101 @@ void extraer_nombres(char *csv_pokemones, char **nombres,
 }
 void seleccionar_pokemon(TP *tp)
 {
-    char *pokemones = tp_nombres_disponibles(tp);
-    if (pokemones == NULL) {
-        printf("Error: No se pudieron obtener los pokemones disponibles.\n");
-        return;
-    }
+	char *pokemones = tp_nombres_disponibles(tp);
+	if (pokemones == NULL) {
+		printf("Error: No se pudieron obtener los pokemones disponibles.\n");
+		return;
+	}
 
-    char **nombres = malloc(MAX_NOMBRES * sizeof(char *));
-    if (nombres == NULL) {
-        printf("Error: No se pudo reservar memoria.\n");
-        free(pokemones);
-        return;
-    }
+	char **nombres = malloc(MAX_NOMBRES * sizeof(char *));
+	if (nombres == NULL) {
+		printf("Error: No se pudo reservar memoria.\n");
+		free(pokemones);
+		return;
+	}
 
-    int cant_poke_counter = 0;
-    extraer_nombres(pokemones, nombres, &cant_poke_counter);
-    int i = 0;
-    while (i < cant_poke_counter) {
+	int cant_poke_counter = 0;
+	extraer_nombres(pokemones, nombres, &cant_poke_counter);
+	int i = 0;
+	while (i < cant_poke_counter) {
+		for (int i = 0; i < cant_poke_counter; i++) {
+			const struct pokemon_info *poke =
+				tp_buscar_pokemon(tp, nombres[i]);
+			if (poke == NULL) {
+				printf("Error: No se pudo obtener la información del pokemon.\n");
+				free_nombres(nombres, cant_poke_counter);
+				free(pokemones);
+				return;
+			}
+			imprimir_poke_tabla(i + 1, nombres[i], poke->fuerza,
+					    poke->inteligencia, poke->destreza);
+			if (i == cant_poke_counter - 1) {
+				printf(HYEL
+				       "(1) Seleccionar (3) Anterior\n" RESET);
+			} else if (i == 0) {
+				printf(HYEL
+				       "(1) Seleccionar (2) Siguiente\n" RESET);
+			} else {
+				printf(HYEL
+				       "(1) Seleccionar (2) Siguiente (3) Anterior\n" RESET);
+			}
+			printf(HYEL "Ingrese una opción ->" RESET);
+			int rsta;
+			if (scanf("%d", &rsta) != 1) {
+				printf("Error: Entrada inválida.\n");
+				continue;
+			}
+			if (rsta == 1) {
+				char *selected_pokemon =
+					copiar_nombre_pokemon(nombres[i]);
+				if (selected_pokemon == NULL) {
+					printf("Error: No se pudo copiar el nombre del pokemon.\n");
+					free_nombres(nombres,
+						     cant_poke_counter);
+					free(pokemones);
+					return;
+				}
+				tp_seleccionar_pokemon(tp, JUGADOR_1,
+						       selected_pokemon);
 
-	for (int i = 0; i < cant_poke_counter; i++) {
-		const struct pokemon_info *poke = tp_buscar_pokemon(tp, nombres[i]);
-		if (poke == NULL) {
-			printf("Error: No se pudo obtener la información del pokemon.\n");
-			free_nombres(nombres, cant_poke_counter);
-			free(pokemones);
-			return;
+				free_nombres(nombres, cant_poke_counter);
+				free(pokemones);
+				free(selected_pokemon);
+				return;
+			} else if (rsta == 3) {
+				if (i > 0) {
+					i -= 2;
+				} else {
+					printf("Ya estás en el primer pokemon.\n");
+				}
+			}
 		}
-        imprimir_poke_tabla(i + 1, nombres[i], poke->fuerza, poke->inteligencia, poke->destreza);
-        if (i == cant_poke_counter - 1) {
-            printf(HYEL"(1) Seleccionar (3) Anterior\n"RESET);
-        } else if (i == 0) {
-            printf(HYEL"(1) Seleccionar (2) Siguiente\n"RESET);
-        } else{
-			printf(HYEL"(1) Seleccionar (2) Siguiente (3) Anterior\n"RESET);
-		}
-        printf(HYEL"Ingrese una opción ->"RESET);
-        int rsta;
-        if (scanf("%d", &rsta) != 1) {
-            printf("Error: Entrada inválida.\n");
-            continue;
-        }
-        if (rsta == 1) {
-            char *selected_pokemon = copiar_nombre_pokemon(nombres[i]);
-            if (selected_pokemon == NULL) {
-                printf("Error: No se pudo copiar el nombre del pokemon.\n");
-                free_nombres(nombres, cant_poke_counter); 
-                free(pokemones); 
-                return;
-            }
-            tp_seleccionar_pokemon(tp, JUGADOR_1, selected_pokemon);
 
-            free_nombres(nombres, cant_poke_counter); 
-            free(pokemones); 
-            free(selected_pokemon);
-            return;
-        } else if (rsta == 3) {
-            if (i > 0) {
-                i -= 2;
-            } else {
-                printf("Ya estás en el primer pokemon.\n");
-            }
-        }
-    }
-
-    free_nombres(nombres, cant_poke_counter);
-    free(pokemones);
-    return;
+		free_nombres(nombres, cant_poke_counter);
+		free(pokemones);
+		return;
+	}
 }
-}
-void crear_pista_al_azar(TP* tp, int i) {
-    int obstaculo = rand() % 3;
-    tp_agregar_obstaculo(tp, JUGADOR_2, obstaculo, (unsigned)i);
+void crear_pista_al_azar(TP *tp, int i)
+{
+	int obstaculo = rand() % 3;
+	tp_agregar_obstaculo(tp, JUGADOR_2, obstaculo, (unsigned)i);
 }
 
-void crear_pista(TP* tp, juego_t *juego, int i){
+void crear_pista(TP *tp, juego_t *juego, int i)
+{
 	imprimir_opciones_obstaculos(i + 1);
-	printf(HYEL"Ingrese una opción -> "RESET);
+	printf(HYEL "Ingrese una opción -> " RESET);
 	int obstaculo;
 	if (scanf("%d", &obstaculo) != 1)
 		return;
-	tp_agregar_obstaculo(tp, JUGADOR_1, obstaculo-1, (unsigned)i);
+	tp_agregar_obstaculo(tp, JUGADOR_1, obstaculo - 1, (unsigned)i);
 }
 char *obtener_al_azal(char **nombres, int count)
 {
 	int random = rand() % count;
 	return nombres[random];
 }
-
-
 
 void seleccionar_pokemon_al_azar(TP *tp)
 {
@@ -231,62 +238,59 @@ void seleccionar_pokemon_al_azar(TP *tp)
 	return;
 }
 
-
-
 void tp_jugar_ronda(TP *tp, int ronda, juego_t *juego)
 {
-	if(ronda == 0){
+	if (ronda == 0) {
 		seleccionar_pokemon(tp);
 	}
-	if(ronda == 0){
+	if (ronda == 0) {
 		seleccionar_pokemon_al_azar(tp);
-			const struct pokemon_info *poke1 = tp_pokemon_seleccionado(tp, JUGADOR_1);
-	const struct pokemon_info *poke2 = tp_pokemon_seleccionado(tp, JUGADOR_2);
-	versus(poke1->nombre, poke2->nombre, poke1->fuerza, poke2->fuerza,
-	       poke1->destreza, poke2->destreza, poke1->inteligencia,
-	       poke2->inteligencia);
+		const struct pokemon_info *poke1 =
+			tp_pokemon_seleccionado(tp, JUGADOR_1);
+		const struct pokemon_info *poke2 =
+			tp_pokemon_seleccionado(tp, JUGADOR_2);
+		versus(poke1->nombre, poke2->nombre, poke1->fuerza,
+		       poke2->fuerza, poke1->destreza, poke2->destreza,
+		       poke1->inteligencia, poke2->inteligencia);
 	}
-	printf(HYEL"Ingrese 1 para continuar -> "RESET);
+	printf(HYEL "Ingrese 1 para continuar -> " RESET);
 	int opt;
-	if(scanf("%d", &opt) != 1)
+	if (scanf("%d", &opt) != 1)
 		return;
-	if (opt != 1)
-	{
+	if (opt != 1) {
 		return;
 	}
-	
-	if(ronda == 0){
-		for(int i = 0; i < juego->obstaculos; i++){
-			crear_pista(tp, juego , i);
+
+	if (ronda == 0) {
+		for (int i = 0; i < juego->obstaculos; i++) {
+			crear_pista(tp, juego, i);
 		}
 	} else {
 		tp_limpiar_pista(tp, JUGADOR_1);
-		for(int i = 0; i < juego->obstaculos; i++){
-			crear_pista(tp, juego , i);
+		for (int i = 0; i < juego->obstaculos; i++) {
+			crear_pista(tp, juego, i);
 		}
 	}
 
-
-	if(ronda == 0){
-		for(int i = 0; i < juego->obstaculos; i++){
+	if (ronda == 0) {
+		for (int i = 0; i < juego->obstaculos; i++) {
 			crear_pista_al_azar(tp, i);
 		}
 	}
 	char *pista1 = tp_obstaculos_pista(tp, JUGADOR_1);
 	pistas(juego->dificultad, pista1);
 
-	printf(HRED "				            <----- TU PISTA ----->\n" RESET);
-	printf(HYEL"Ingrese 1 para continuar -> "RESET);
-	if(scanf("%d", &opt) != 1)
+	printf(HRED
+	       "				            <----- TU PISTA ----->\n" RESET);
+	printf(HYEL "Ingrese 1 para continuar -> " RESET);
+	if (scanf("%d", &opt) != 1)
 		return;
-	if (opt != 1)
-	{
+	if (opt != 1) {
 		return;
 	}
 	free(pista1);
 
-	if (ronda == 0)
-	{
+	if (ronda == 0) {
 		char *pista2 = tp_obstaculos_pista(tp, JUGADOR_2);
 		int posicion_X = rand() % juego->obstaculos;
 		switch (juego->dificultad) {
@@ -313,22 +317,21 @@ void tp_jugar_ronda(TP *tp, int ronda, juego_t *juego)
 		juego->pista_2 = copiar_nombre_pokemon(pista2);
 		free(pista2);
 	}
-	
 
 	pistas(juego->dificultad, juego->pista_2);
-	printf(HRED "					<----- PISTA DE TU CONTRINCANTE ----->\n" RESET);
-	printf(HYEL"Ingrese 1 para continuar -> "RESET);
-	if(scanf("%d", &opt) != 1)
+	printf(HRED
+	       "					<----- PISTA DE TU CONTRINCANTE ----->\n" RESET);
+	printf(HYEL "Ingrese 1 para continuar -> " RESET);
+	if (scanf("%d", &opt) != 1)
 		return;
-	if (opt != 1)
-	{
+	if (opt != 1) {
 		return;
 	}
-	
+
 	unsigned tiempo1 = tp_calcular_tiempo_pista(tp, JUGADOR_1);
 	unsigned tiempo2 = tp_calcular_tiempo_pista(tp, JUGADOR_2);
 
-		int resta = (int)(tiempo1 - tiempo2);
+	int resta = (int)(tiempo1 - tiempo2);
 	if (resta < 0) {
 		resta = -resta;
 	}
@@ -336,22 +339,23 @@ void tp_jugar_ronda(TP *tp, int ronda, juego_t *juego)
 		(float)100 - (float)(100 * resta / (int)(tiempo1 + tiempo2));
 	printf("Puntaje: %.2f \n", puntaje);
 	if (puntaje >= juego->puntaje_para_poder_ganar) {
-		fin_de_la_partida(true, juego->rondas_por_jugar - ronda, puntaje, (int)tiempo1, (int)tiempo2);
+		fin_de_la_partida(true, juego->rondas_por_jugar - ronda,
+				  puntaje, (int)tiempo1, (int)tiempo2);
 	} else {
-		fin_de_la_partida(false, juego->rondas_por_jugar - ronda, puntaje, (int)tiempo1, (int)tiempo2);
+		fin_de_la_partida(false, juego->rondas_por_jugar - ronda,
+				  puntaje, (int)tiempo1, (int)tiempo2);
 	}
 	if (ronda == juego->rondas_por_jugar - 1) {
-		printf(HYEL"Ingrese 1 para continuar -> "RESET);
-		if(scanf("%d", &opt) != 1)
+		printf(HYEL "Ingrese 1 para continuar -> " RESET);
+		if (scanf("%d", &opt) != 1)
 			return;
-		if (opt != 1)
-		{
+		if (opt != 1) {
 			return;
 		}
-		
+
 		return;
 	}
-	printf(HYEL"Desea seguir jugando? (1) si (2) no ->"RESET);
+	printf(HYEL "Desea seguir jugando? (1) si (2) no ->" RESET);
 	int seguir;
 	if (scanf("%d", &seguir) != 1)
 		return;
@@ -368,7 +372,6 @@ void tp_jugar(TP *tp, juego_t *juego)
 		tp_jugar_ronda(tp, ronda, juego);
 		ronda++;
 	}
-
 }
 
 int main(int argc, char const *argv[])
@@ -391,7 +394,7 @@ int main(int argc, char const *argv[])
 	int opcion;
 	if (scanf("%d", &opcion) != 1)
 		return 1;
-	if (opcion == 1){
+	if (opcion == 1) {
 		seleccionar_dificultad(juego);
 		tp_jugar(tp, juego);
 	}

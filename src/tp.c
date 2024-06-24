@@ -7,7 +7,6 @@
 #include "lista.h"
 #include "quicksort.h"
 
-
 struct tp {
 	hash_t *hash_pokemones;
 	struct pokemon_info *pokemon_1;
@@ -15,7 +14,6 @@ struct tp {
 	struct pokemon_info *pokemon_2;
 	lista_t *pista_2;
 };
-
 
 void capitalizar_primera_letra(char *cadena)
 {
@@ -81,6 +79,39 @@ bool agregar_clave(const char *clave, void *valor, void *aux)
 		return false;
 	}
 	nombres->cantidad++;
+	return true;
+}
+typedef struct {
+	char *obstaculos_pista;
+	size_t posicion;
+} obstaculos_pista_aux_t;
+
+bool agregar_obstaculo_a_string(void *obstaculo, void *aux)
+{
+	if (!obstaculo || !aux) {
+		return false;
+	}
+	obstaculos_pista_aux_t *aux_data = (obstaculos_pista_aux_t *)aux;
+	enum TP_OBSTACULO *obstaculo_actual = (enum TP_OBSTACULO *)obstaculo;
+	if (!obstaculo_actual || !aux_data) {
+		return false;
+	}
+	switch (*obstaculo_actual) {
+	case OBSTACULO_FUERZA:
+		aux_data->obstaculos_pista[aux_data->posicion++] =
+			IDENTIFICADOR_OBSTACULO_FUERZA;
+		break;
+	case OBSTACULO_DESTREZA:
+		aux_data->obstaculos_pista[aux_data->posicion++] =
+			IDENTIFICADOR_OBSTACULO_DESTREZA;
+		break;
+	case OBSTACULO_INTELIGENCIA:
+		aux_data->obstaculos_pista[aux_data->posicion++] =
+			IDENTIFICADOR_OBSTACULO_INTELIGENCIA;
+		break;
+	default:
+		return false;
+	}
 	return true;
 }
 
@@ -388,40 +419,6 @@ unsigned tp_quitar_obstaculo(TP *tp, enum TP_JUGADOR jugador, unsigned posicion)
 	return (unsigned)lista_tamanio(pista_actual);
 }
 
-typedef struct {
-	char *obstaculos_pista;
-	size_t posicion;
-} obstaculos_pista_aux_t;
-
-bool agregar_obstaculo_a_string(void *obstaculo, void *aux)
-{
-	if (!obstaculo || !aux) {
-		return false;
-	}
-	obstaculos_pista_aux_t *aux_data = (obstaculos_pista_aux_t *)aux;
-	enum TP_OBSTACULO *obstaculo_actual = (enum TP_OBSTACULO *)obstaculo;
-	if (!obstaculo_actual || !aux_data) {
-		return false;
-	}
-	switch (*obstaculo_actual) {
-	case OBSTACULO_FUERZA:
-		aux_data->obstaculos_pista[aux_data->posicion++] =
-			IDENTIFICADOR_OBSTACULO_FUERZA;
-		break;
-	case OBSTACULO_DESTREZA:
-		aux_data->obstaculos_pista[aux_data->posicion++] =
-			IDENTIFICADOR_OBSTACULO_DESTREZA;
-		break;
-	case OBSTACULO_INTELIGENCIA:
-		aux_data->obstaculos_pista[aux_data->posicion++] =
-			IDENTIFICADOR_OBSTACULO_INTELIGENCIA;
-		break;
-	default:
-		return false;
-	}
-	return true;
-}
-
 char *tp_obstaculos_pista(TP *tp, enum TP_JUGADOR jugador)
 {
 	if (!tp || (jugador != JUGADOR_1 && jugador != JUGADOR_2)) {
@@ -470,7 +467,7 @@ void tp_limpiar_pista(TP *tp, enum TP_JUGADOR jugador)
 
 	if (jugador == JUGADOR_1) {
 		pista_actual = tp->pista_1;
-		tp->pista_1 = NULL; 
+		tp->pista_1 = NULL;
 	} else {
 		pista_actual = tp->pista_2;
 		tp->pista_2 = NULL;
@@ -512,7 +509,8 @@ unsigned tp_calcular_tiempo_pista(TP *tp, enum TP_JUGADOR jugador)
 	}
 
 	for (size_t i = 0; i < cant_obstaculos; i++) {
-		int *obstaculo_tipo_aux = (int *)lista_elemento_en_posicion(pista, i);
+		int *obstaculo_tipo_aux =
+			(int *)lista_elemento_en_posicion(pista, i);
 		if (!obstaculo_tipo_aux) {
 			return 0;
 		}

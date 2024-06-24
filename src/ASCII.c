@@ -501,7 +501,7 @@ void imprimir_pokemon(char *nombre)
 	}
 }
 void imprimir_poke_tabla(int id, char *nombre, int fuerza, int inteligencia,
-			int destreza)
+			 int destreza)
 {
 	imprimir_pokemon(nombre);
 	printf("        ┌──────────────────────────┐\n");
@@ -546,8 +546,7 @@ void salida()
 }
 
 void versus(char *nombre1, char *nombre2, int fuerza1, int fuerza2,
-	    int destreza1, int destreza2, int inteligencia1,
-	    int inteligencia2)
+	    int destreza1, int destreza2, int inteligencia1, int inteligencia2)
 {
 	printf("\033[H\033[J");
 	printf("                   " HBLU
@@ -598,10 +597,14 @@ void versus(char *nombre1, char *nombre2, int fuerza1, int fuerza2,
 	       "└──────────────────┘             " HRED
 	       "└──────────────────┘\n" RESET);
 }
-void imprimir_dificultades(int obs_facil, int reintentos_facil, int porcentaje_facil, int pista_facil, 
-int obs_normal, int reintentos_normal, int porcentaje_normal, int pista_normal, int obs_dificil, 
-int reintentos_dificil, int porcentaje_dificil, int pista_dificil, int obs_imposible, 
-int reintentos_imposible, int porcentaje_imposible, int pista_imposible)
+void imprimir_dificultades(int obs_facil, int reintentos_facil,
+			   int porcentaje_facil, int pista_facil,
+			   int obs_normal, int reintentos_normal,
+			   int porcentaje_normal, int pista_normal,
+			   int obs_dificil, int reintentos_dificil,
+			   int porcentaje_dificil, int pista_dificil,
+			   int obs_imposible, int reintentos_imposible,
+			   int porcentaje_imposible, int pista_imposible)
 
 {
 	printf("\033[H\033[J");
@@ -612,18 +615,20 @@ int reintentos_imposible, int porcentaje_imposible, int pista_imposible)
 	       obs_facil);
 	printf("            │    - No podras ver, máximo, %d 		               │\n",
 	       pista_facil);
-		printf("            │      obstaculos de tu contrincante. Tienes %d reintentos. │ \n", reintentos_facil);
+	printf("            │      obstaculos de tu contrincante. Tienes %d reintentos. │ \n",
+	       reintentos_facil);
 	printf("            │    - Para ganar necesitás un porcentaje mayor a %d %%     │\n",
 	       porcentaje_facil);
 	printf("            └──────────────────────────────────────────────────────────┘\n" RESET);
-		printf(HGRN
+	printf(HGRN
 	       "            ┌──────────────────────────────────────────────────────────┐\n");
 	printf("            │  (2) Normal:                                             │\n");
 	printf("            │    - La pista tiene %d obstaculos.                        │\n",
 	       obs_normal);
 	printf("            │    - No podrás ver, máximo, %d                            │\n",
 	       pista_normal);
-	printf("            │      obstaculos de tu contrincante. Tienes %d reintentos. │ \n", reintentos_normal);
+	printf("            │      obstaculos de tu contrincante. Tienes %d reintentos. │ \n",
+	       reintentos_normal);
 	printf("            │    - Para ganar necesitás un porcentaje mayor a %d %%     │\n",
 	       porcentaje_normal);
 	printf("            └──────────────────────────────────────────────────────────┘\n" RESET);
@@ -635,7 +640,8 @@ int reintentos_imposible, int porcentaje_imposible, int pista_imposible)
 	       obs_dificil);
 	printf("            │    - No podras ver, máximo, %d    			       │\n",
 	       pista_dificil);
-	printf("            │      obstaculos de tu contrincante. Tienes %d reintentos. │ \n", reintentos_dificil);
+	printf("            │      obstaculos de tu contrincante. Tienes %d reintentos. │ \n",
+	       reintentos_dificil);
 	printf("            │    - Para ganar necesitás un porcentaje mayor a %d %%     │\n",
 	       porcentaje_dificil);
 	printf("            └──────────────────────────────────────────────────────────┘\n" RESET);
@@ -647,7 +653,8 @@ int reintentos_imposible, int porcentaje_imposible, int pista_imposible)
 	       obs_imposible);
 	printf("            │    - No podras ver, máximo, %d 	                       │\n",
 	       pista_imposible);
-	printf("            │      obstaculos de tu contrincante. Tienes %d reintentos. │ \n", reintentos_imposible);
+	printf("            │      obstaculos de tu contrincante. Tienes %d reintentos. │ \n",
+	       reintentos_imposible);
 	printf("            │    - Para ganar necesitás un porcentaje mayor a %d %%     │\n",
 	       porcentaje_imposible);
 	printf("            └──────────────────────────────────────────────────────────┘\n" RESET);
@@ -655,7 +662,7 @@ int reintentos_imposible, int porcentaje_imposible, int pista_imposible)
 
 void pistas(int dificultad, char *pista_completa)
 {
-		printf("\033[H\033[J");
+	printf("\033[H\033[J");
 	switch (dificultad) {
 	case FACIL:
 		printf("                ┌───────────────────────────────────────────────────────────────────────────────────────┐\n");
@@ -676,7 +683,8 @@ void pistas(int dificultad, char *pista_completa)
 		printf("                │                                                                                       │\n");
 		printf("                │           ┌───┐          ┌───┐          ┌───┐          ┌───┐          ┌───┐         F │\n");
 		printf("                │           │ %c │          │ %c │          │ %c │          │ %c │          │ %c │         I │\n",
-		       pista_completa[0], pista_completa[1], pista_completa[2], pista_completa[3], pista_completa[4]);
+		       pista_completa[0], pista_completa[1], pista_completa[2],
+		       pista_completa[3], pista_completa[4]);
 		printf("                │           │ ^ │          │ ^ │          │ ^ │          │ ^ │          │ ^ │         N │\n");
 		printf("                │           └───┘          └───┘          └───┘          └───┘          └───┘         ! │\n");
 		printf("                │                                                                                       │\n");
@@ -689,8 +697,9 @@ void pistas(int dificultad, char *pista_completa)
 		printf("                │                                                                                       │\n");
 		printf("                │           ┌───┐    ┌───┐    ┌───┐    ┌───┐    ┌───┐    ┌───┐    ┌───┐               F │\n");
 		printf("                │           │ %c │    │ %c │    │ %c │    │ %c │    │ %c │    │ %c │    │ %c │               I │\n",
-		       pista_completa[0], pista_completa[1], pista_completa[2], pista_completa[3], pista_completa[4],
-		       pista_completa[5], pista_completa[6]);
+		       pista_completa[0], pista_completa[1], pista_completa[2],
+		       pista_completa[3], pista_completa[4], pista_completa[5],
+		       pista_completa[6]);
 		printf("                │           │ ^ │    │ ^ │    │ ^ │    │ ^ │    │ ^ │    │ ^ │    │ ^ │               N │\n");
 		printf("                │           └───┘    └───┘    └───┘    └───┘    └───┘    └───┘    └───┘               ! │\n");
 		printf("                │                                                                                       │\n");
@@ -703,9 +712,10 @@ void pistas(int dificultad, char *pista_completa)
 		printf("				├────────────────────────────────────────────────────────────────────────────────────────┤\n");
 		printf("				│                                                                                        │\n");
 		printf("				│            ┌───┐   ┌───┐   ┌───┐   ┌───┐   ┌───┐   ┌───┐   ┌───┐   ┌───┐               │\n");
-		printf("				│            │ %c │   │ %c │   │ %c │   │ %c │   │ %c │   │ %c │   │ %c │   │ %c │               │\n", 
-		pista_completa[0], pista_completa[1], pista_completa[2], pista_completa[3], pista_completa[4], pista_completa[5], pista_completa[6],
-		pista_completa[7]);
+		printf("				│            │ %c │   │ %c │   │ %c │   │ %c │   │ %c │   │ %c │   │ %c │   │ %c │               │\n",
+		       pista_completa[0], pista_completa[1], pista_completa[2],
+		       pista_completa[3], pista_completa[4], pista_completa[5],
+		       pista_completa[6], pista_completa[7]);
 		printf("				│            │   │   │   │   │   │   │   │   │   │   │   │   │   │   │   │               │\n");
 		printf("				│            │   │   │   │   │   │   │   │   │   │   │   │   │   │   │   │               │\n");
 		printf("				│            └───┘   └───┘   └───┘   └───┘   └───┘   └───┘   └───┘   └───┘               │\n");
@@ -717,16 +727,19 @@ void pistas(int dificultad, char *pista_completa)
 	}
 }
 void fin_de_la_partida(bool ganada, int cantidad_de_rondas_por_jugar,
-		    float porcentaje, int tiempo1, int tiempo2)
+		       float porcentaje, int tiempo1, int tiempo2)
 {
 	printf("\033[H\033[J");
 	if (ganada == false) {
 		printf("                      +---------------------------------------------------------------+\n");
 		printf("                      |                                                               |\n");
-		printf("                      |                           "HRED"DERROTA"RESET"                             |\n");
+		printf("                      |                           " HRED
+		       "DERROTA" RESET "                             |\n");
 		printf("                      |      +-------------------------------------------------+      |\n");
-		printf("                      |      | Tiempo que tardaste en terminar: %-3d            |      |\n", tiempo1);
-		printf("                      |      | Tiempo que tardo tu contrincante en terminar:%-2d |      |\n", tiempo2);
+		printf("                      |      | Tiempo que tardaste en terminar: %-3d            |      |\n",
+		       tiempo1);
+		printf("                      |      | Tiempo que tardo tu contrincante en terminar:%-2d |      |\n",
+		       tiempo2);
 		printf("                      |      |                                                 |      |\n");
 		printf("                      |      |       PORCENTAJE SACADO:%6.2f %%                |      |\n",
 		       porcentaje);
@@ -739,10 +752,14 @@ void fin_de_la_partida(bool ganada, int cantidad_de_rondas_por_jugar,
 	} else {
 		printf("                      +---------------------------------------------------------------------------+ \n");
 		printf("                      |                                                                           |  \n");
-		printf("                      |             		    "HGRN"VICTORIA"RESET"                                      |  \n");
+		printf("                      |             		    " HGRN
+		       "VICTORIA" RESET
+		       "                                      |  \n");
 		printf("                      |          +-------------------------------------------------+              |                                                        \n");
-		printf("                      |          | Tiempo que tardaste en terminar: %-3d            |              |\n", tiempo1);
-		printf("                      |          | Tiempo que tardo tu contrincante en terminar:%-2d |              | \n", tiempo2);
+		printf("                      |          | Tiempo que tardaste en terminar: %-3d            |              |\n",
+		       tiempo1);
+		printf("                      |          | Tiempo que tardo tu contrincante en terminar:%-2d |              | \n",
+		       tiempo2);
 		printf("                      |          |                                                 |              | \n");
 		printf("                      |          |       PORCENTAJE SACADO: %6.2f %%               |              | \n",
 		       porcentaje);
@@ -754,11 +771,13 @@ void fin_de_la_partida(bool ganada, int cantidad_de_rondas_por_jugar,
 		printf("                      +---------------------------------------------------------------------------+ \n");
 	}
 }
-void imprimir_opciones_obstaculos(int posicion){
-		printf("\033[H\033[J");
+void imprimir_opciones_obstaculos(int posicion)
+{
+	printf("\033[H\033[J");
 	printf("			┌─────────────────────────────────┐\n");
 	printf("			│  Ingrese un obstaculo en        │\n");
-	printf("			│   la posicion %d° de su pista    │\n", posicion);
+	printf("			│   la posicion %d° de su pista    │\n",
+	       posicion);
 	printf("			│                                 │\n");
 	printf("			│ ┌─────────────────────────────┐ │\n");
 	printf("			│ │ (1) FUERZA                  │ │\n");
