@@ -395,10 +395,6 @@ void tp_obstaculo_pista_pruebas_pista_mixta_c()
 
 	unsigned int tiempo = tp_calcular_tiempo_pista(tp, JUGADOR_1);
 	pa2m_afirmar(tiempo == 38, "TIEMPO IGUAL A 38");
-	/* char *rst = tp_tiempo_por_obstaculo(tp, JUGADOR_1);
-	pa2m_afirmar(strcmp(rst, "7,7,7,2,2,2,2,2,2,2,2,9,9") == 0,
-		     "Tiempo correcto");
-	free(rst); */
 	tp_destruir(tp);
 }
 void tp_obstaculo_pista_pruebas_pista_mixta()
@@ -449,6 +445,69 @@ void tp_tiempo_por_obstaculo_pruebas()
 	tp_destruir(tp);
 }
 
+void pruebas_con_dos_jugadores()
+{
+	TP *tp = tp_crear("ejemplo/pokemones.txt");
+	pa2m_afirmar(tp_seleccionar_pokemon(tp, JUGADOR_1, "Pikachu") == true,
+		     "Se selecciono correctamente el pokemon");
+	pa2m_afirmar(tp_seleccionar_pokemon(tp, JUGADOR_2, "Blastoise") == true,
+		     "Se selecciono correctamente el pokemon");
+	pa2m_afirmar(tp_agregar_obstaculo(tp, JUGADOR_1, OBSTACULO_FUERZA, 0) ==
+			     1,
+		     "Se agrego correctamente el OBSTACULO_FUERZA");
+	pa2m_afirmar(tp_agregar_obstaculo(tp, JUGADOR_1, OBSTACULO_DESTREZA,
+					  1) == 2,
+		     "Se agrego correctamente el OBSTACULO_DESTREZA");
+	pa2m_afirmar(tp_agregar_obstaculo(tp, JUGADOR_1, OBSTACULO_INTELIGENCIA,
+					  2) == 3,
+		     "Se agrego correctamente el OBSTACULO_INTELIGENCIA");
+	pa2m_afirmar(tp_agregar_obstaculo(tp, JUGADOR_2, OBSTACULO_FUERZA, 0) ==
+			     1,
+		     "Se agrego correctamente el OBSTACULO_FUERZA");
+	pa2m_afirmar(tp_agregar_obstaculo(tp, JUGADOR_2, OBSTACULO_DESTREZA,
+					  1) == 2,
+		     "Se agrego correctamente el OBSTACULO_DESTREZA");
+	pa2m_afirmar(tp_agregar_obstaculo(tp, JUGADOR_2, OBSTACULO_INTELIGENCIA,
+					  2) == 3,
+		     "Se agrego correctamente el OBSTACULO_INTELIGENCIA");
+	pa2m_afirmar(tp_calcular_tiempo_pista(tp, JUGADOR_1) == 3,
+		     "Tiempo correcto");
+	pa2m_afirmar(tp_calcular_tiempo_pista(tp, JUGADOR_2) == 5,
+		     "Tiempo correcto");
+	tp_destruir(tp);
+
+	tp = tp_crear("ejemplo/pokemones.txt");
+	pa2m_afirmar(tp_seleccionar_pokemon(tp, JUGADOR_1, "Pikachu") == true,
+		     "Se selecciono correctamente el pokemon");
+	pa2m_afirmar(tp_seleccionar_pokemon(tp, JUGADOR_2, "Pikachu") == false,
+		     "No se selecciono el mismo pokemon que el jugador 1");
+	pa2m_afirmar(tp_seleccionar_pokemon(tp, JUGADOR_2, "Blastoise") == true,
+		     "Se selecciono correctamente el pokemon");
+	pa2m_afirmar(tp_agregar_obstaculo(tp, JUGADOR_1, OBSTACULO_FUERZA, 0) ==
+			     1,
+		     "Se agrego correctamente el OBSTACULO_FUERZA");
+	pa2m_afirmar(tp_agregar_obstaculo(tp, JUGADOR_1, OBSTACULO_DESTREZA,
+					  1) == 2,
+		     "Se agrego correctamente el OBSTACULO_DESTREZA");
+	pa2m_afirmar(tp_agregar_obstaculo(tp, JUGADOR_1, OBSTACULO_INTELIGENCIA,
+					  2) == 3,
+		     "Se agrego correctamente el OBSTACULO_INTELIGENCIA");
+	pa2m_afirmar(tp_agregar_obstaculo(tp, JUGADOR_2, OBSTACULO_FUERZA, 0) ==
+			     1,
+		     "Se agrego correctamente el OBSTACULO_FUERZA");
+	pa2m_afirmar(tp_agregar_obstaculo(tp, JUGADOR_2, OBSTACULO_DESTREZA,
+					  1) == 2,
+		     "Se agrego correctamente el OBSTACULO_DESTREZA");
+	pa2m_afirmar(tp_agregar_obstaculo(tp, JUGADOR_2, OBSTACULO_INTELIGENCIA,
+					  2) == 3,
+		     "Se agrego correctamente el OBSTACULO_INTELIGENCIA");
+	pa2m_afirmar(tp_calcular_tiempo_pista(tp, JUGADOR_1) == 3,
+		     "Tiempo correcto");
+	pa2m_afirmar(tp_calcular_tiempo_pista(tp, JUGADOR_2) == 5,
+		     "Tiempo correcto");
+	tp_destruir(tp);
+}
+
 int main()
 {
 	pa2m_nuevo_grupo(
@@ -490,5 +549,9 @@ int main()
 		"\n======================== TP_TIEMPO_POR_OBSTACULO ========================");
 	tp_tiempo_por_obstaculo_pruebas();
 	tp_obstaculo_pista_pruebas_pista_mixta_c();
+	pa2m_nuevo_grupo(
+		"\n======================== PRUEBAS_CON_DOS_JUGADORES ========================");
+	pruebas_con_dos_jugadores();
+
 	return pa2m_mostrar_reporte();
 }
